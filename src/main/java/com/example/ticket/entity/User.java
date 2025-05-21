@@ -1,10 +1,12 @@
 package com.example.ticket.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 import javax.management.relation.Role;
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "users")
 public class User {
