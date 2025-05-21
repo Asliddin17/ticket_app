@@ -9,10 +9,16 @@ import lombok.Data;
 public class Ticket {
     @Id
     private String id;
-    @OneToOne
+
+    @ManyToOne
     private Event event;
-    @OneToOne
+
+    @ManyToOne
     private User user;
+
+    @ManyToOne
+    private Basket basket;
+
     @Enumerated(EnumType.STRING)
     private Status status;
 }

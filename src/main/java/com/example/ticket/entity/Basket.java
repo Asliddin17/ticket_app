@@ -4,15 +4,20 @@ import com.example.ticket.entity.enums.Status;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @Entity
 public class Basket {
     @Id
     private String id;
-    @OneToMany
-    private Ticket ticket;
-    @OneToMany
+
+    @ManyToOne
     private User user;
+
+    @OneToMany(mappedBy = "basket")
+    private List<Ticket> tickets;
+
     @Enumerated(EnumType.STRING)
     private Status status;
 }
