@@ -1,4 +1,11 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%--
+  Created by IntelliJ IDEA.
+  User: jahon
+  Date: 08/05/2025
+  Time: 23:52
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <html>
@@ -8,6 +15,84 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link href="${pageContext.request.contextPath}/dashboard/assets/style.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+            padding-top: 70px;
+        }
+
+        .form-container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            border-top: 5px solid #007bff;
+        }
+
+        .form-title {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #343a40;
+            font-weight: bold;
+            font-size: 1.8rem;
+        }
+
+        .form-icon {
+            font-size: 2.5rem;
+            color: #007bff;
+            margin-bottom: 15px;
+            display: block;
+            text-align: center;
+        }
+
+        .form-control {
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+
+        .is-invalid {
+            border-color: #dc3545;
+        }
+
+        .is-valid {
+            border-color: #28a745;
+        }
+
+        .btn-submit {
+            padding: 12px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #007bff, #6610f2);
+            border: none;
+            transition: transform 0.2s;
+        }
+
+        .btn-submit:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 576px) {
+            .form-container {
+                padding: 20px;
+            }
+
+            .form-title {
+                font-size: 1.5rem;
+            }
+
+            .form-icon {
+                font-size: 2rem;
+            }
+        }
+
+    </style>
 
 </head>
 <body>
@@ -95,49 +180,56 @@
 </nav>
 
 
-<div class="container my-5">
-    <h1 class="text-center mb-4">Events</h1>
-    <div class="search-container">
-        <div class="input-group">
-            <form action="${pageContext.request.contextPath}/search" method="POST" class="input-group">
-                <label for="searchInput" class="visually-hidden">Search products</label>
-                <input type="text" name="keyword" id="searchInput" class="form-control"
-                       placeholder="Search products...">
-                <button type="submit" class="btn btn-outline-secondary">Search</button>
-            </form>
-        </div>
-    </div>
-    <div id="userView" class="row row-cols-1 row-cols-md-3 g-4">
-
-        <%--@elvariable id="products" type=""--%>
-        <c:forEach items="${products}" var="pr">
-            <div class="col">
-                <div class="card product-card h-100">
-                    <div class="product-image">
-                        <img src="${pageContext.request.contextPath}/download?fileId=${pr.attachmentId}" alt="Laptop">
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">${pr.name}</h5>
-                        <p class="card-text flex-grow-1">${pr.description}</p>
-
-                        <div class="d-flex align-items-center justify-content-between">
-                            <p class="card-text mb-0"><strong>Price:</strong> ${pr.price}$</p>
-                            <form action="${pageContext.request.contextPath}/basket" method="post">
-                                <label>
-                                    <input type="text" value="${pr.id}" name="productId" hidden="hidden">
-                                </label>
-                                <button type="submit" class="btn btn-primary btn-sm">
-                                    <i class="bi bi-basket2 me-1"></i> <span>Add Basket</span>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
+<div class="container" style="margin-top: -50px">
+    <div class="form-container">
+        <span class="form-icon">💳</span>
+        <h2 class="form-title">Add New Card</h2>
+        <form id="addCardForm" action="${pageContext.request.contextPath}/card" method="post" novalidate>
+            <div class="mb-3">
+                <label for="cardNumber" class="form-label">Card Number</label>
+                <input type="text" class="form-control" id="cardNumber" name="number" placeholder="1234 5678 9012 3456"
+                       maxlength="19"
+                       required>
+                <div class="invalid-feedback">Enter a valid 16-digit card number.</div>
+            </div>
+            <div class="mb-3">
+                <label for="cardHolder" class="form-label">Card Holder Name</label>
+                <input type="text" class="form-control" name="holder" id="cardHolder" placeholder="John Doe" required>
+                <div class="invalid-feedback">Enter a valid name.</div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="expiryDate" class="form-label">Expiry Date</label>
+                    <input type="text" class="form-control" name="date" id="expiryDate" placeholder="MM/YY"
+                           maxlength="5" required>
+                    <div class="invalid-feedback">Enter a valid expiry date (MM/YY).</div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="cvv" class="form-label">CVV</label>
+                    <input type="text" class="form-control" name="cvv" id="cvv" placeholder="123" maxlength="3"
+                           required>
+                    <div class="invalid-feedback">Enter a valid 3-digit CVV.</div>
+                </div>
+                <div class="mb-3">
+                    <label for="balance" class="form-label">Initial balance</label>
+                    <input type="text" class="form-control" name="balance" id="balance" placeholder="" required>
+                    <div class="invalid-feedback">Enter a valid balance.</div>
                 </div>
             </div>
-        </c:forEach>
+            <button type="submit" class="btn btn-primary btn-submit w-100">Add Card</button>
+        </form>
     </div>
 </div>
 
-<script src="${pageContext.request.contextPath}/dashboard/assets/script.js"></script>
+
+<script src="${pageContext.request.contextPath}/auth/assets/script.js"></script>
+
+<c:if test="${not empty message}">
+    <script>
+        alert("${title}\n${message}");
+    </script>
+</c:if>
+
+
 </body>
 </html>

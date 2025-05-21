@@ -11,4 +11,8 @@ public class AuthService {
     public void signUp(HttpServletRequest req, HttpServletResponse resp) {
 
     }
+
+    public void logOut(HttpServletRequest req, HttpServletResponse resp) {
+
+    }
 }

@@ -1,15 +1,22 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
+<%--
+  Created by IntelliJ IDEA.
+  User: jahon
+  Date: 08/05/2025
+  Time: 23:32
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <html>
 <head>
     <title>Title</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link href="${pageContext.request.contextPath}/dashboard/assets/style.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-
 </head>
+
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
     <div class="container-fluid">
@@ -94,50 +101,50 @@
     </div>
 </nav>
 
+<div class="container">
+    <div class="table-container">
+        <h2 class="table-title">Cards List</h2>
+        <table class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Card Number</th>
+                <th scope="col">Card Holder</th>
+                <th scope="col">CVV</th>
+                <th scope="col">Expiry Date</th>
+                <th scope="col">Balance</th>
+                <th scope="col">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <c:set var="i" value="1"/>
+            <c:forEach items="${cards}" var="card">
+                <tr>
+                    <th scope="row">${i}</th>
+                    <td>${card.cardNumber}</td>
+                    <td>${card.holderName}</td>
+                    <td>${card.cardExpiryDate}</td>
+                    <td>${card.cardCVV}</td>
+                    <td>${card.balance}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary btn-action">Edit</button>
+                        <button class="btn btn-sm btn-outline-danger btn-action">Delete</button>
+                    </td>
+                </tr>
+                <c:set var="i" value="${i + 1}"/>
+            </c:forEach>
 
-<div class="container my-5">
-    <h1 class="text-center mb-4">Events</h1>
-    <div class="search-container">
-        <div class="input-group">
-            <form action="${pageContext.request.contextPath}/search" method="POST" class="input-group">
-                <label for="searchInput" class="visually-hidden">Search products</label>
-                <input type="text" name="keyword" id="searchInput" class="form-control"
-                       placeholder="Search products...">
-                <button type="submit" class="btn btn-outline-secondary">Search</button>
-            </form>
-        </div>
-    </div>
-    <div id="userView" class="row row-cols-1 row-cols-md-3 g-4">
-
-        <%--@elvariable id="products" type=""--%>
-        <c:forEach items="${products}" var="pr">
-            <div class="col">
-                <div class="card product-card h-100">
-                    <div class="product-image">
-                        <img src="${pageContext.request.contextPath}/download?fileId=${pr.attachmentId}" alt="Laptop">
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">${pr.name}</h5>
-                        <p class="card-text flex-grow-1">${pr.description}</p>
-
-                        <div class="d-flex align-items-center justify-content-between">
-                            <p class="card-text mb-0"><strong>Price:</strong> ${pr.price}$</p>
-                            <form action="${pageContext.request.contextPath}/basket" method="post">
-                                <label>
-                                    <input type="text" value="${pr.id}" name="productId" hidden="hidden">
-                                </label>
-                                <button type="submit" class="btn btn-primary btn-sm">
-                                    <i class="bi bi-basket2 me-1"></i> <span>Add Basket</span>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </c:forEach>
+            </tbody>
+        </table>
     </div>
 </div>
 
+
+<c:if test="${not empty message}">
+    <script>
+        alert("${message}");
+    </script>
+</c:if>
 <script src="${pageContext.request.contextPath}/dashboard/assets/script.js"></script>
 </body>
 </html>

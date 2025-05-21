@@ -1,9 +1,14 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
-
+<%--
+  Created by IntelliJ IDEA.
+  User: jahon
+  Date: 21/05/2025
+  Time: 15:42
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Title</title>
+    <title>My tickets</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link href="${pageContext.request.contextPath}/dashboard/assets/style.css" rel="stylesheet">
@@ -95,49 +100,5 @@
 </nav>
 
 
-<div class="container my-5">
-    <h1 class="text-center mb-4">Events</h1>
-    <div class="search-container">
-        <div class="input-group">
-            <form action="${pageContext.request.contextPath}/search" method="POST" class="input-group">
-                <label for="searchInput" class="visually-hidden">Search products</label>
-                <input type="text" name="keyword" id="searchInput" class="form-control"
-                       placeholder="Search products...">
-                <button type="submit" class="btn btn-outline-secondary">Search</button>
-            </form>
-        </div>
-    </div>
-    <div id="userView" class="row row-cols-1 row-cols-md-3 g-4">
-
-        <%--@elvariable id="products" type=""--%>
-        <c:forEach items="${products}" var="pr">
-            <div class="col">
-                <div class="card product-card h-100">
-                    <div class="product-image">
-                        <img src="${pageContext.request.contextPath}/download?fileId=${pr.attachmentId}" alt="Laptop">
-                    </div>
-                    <div class="card-body d-flex flex-column">
-                        <h5 class="card-title">${pr.name}</h5>
-                        <p class="card-text flex-grow-1">${pr.description}</p>
-
-                        <div class="d-flex align-items-center justify-content-between">
-                            <p class="card-text mb-0"><strong>Price:</strong> ${pr.price}$</p>
-                            <form action="${pageContext.request.contextPath}/basket" method="post">
-                                <label>
-                                    <input type="text" value="${pr.id}" name="productId" hidden="hidden">
-                                </label>
-                                <button type="submit" class="btn btn-primary btn-sm">
-                                    <i class="bi bi-basket2 me-1"></i> <span>Add Basket</span>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </c:forEach>
-    </div>
-</div>
-
-<script src="${pageContext.request.contextPath}/dashboard/assets/script.js"></script>
 </body>
 </html>
