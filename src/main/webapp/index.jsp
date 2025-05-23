@@ -110,7 +110,7 @@
                     <h5 class="card-title">Rock Concert</h5>
                     <p class="card-text">Feel the energy with top bands live in your city.</p>
                     <p class="text-primary fw-bold">$29.99</p>
-                    <a href="#" class="btn btn-outline-primary btn-sm">Buy Ticket</a>
+                    <a href="${pageContext.request.contextPath}/signin" class="btn btn-outline-primary btn-sm">Buy Ticket</a>
                 </div>
             </div>
         </div>
@@ -121,7 +121,7 @@
                     <h5 class="card-title">Tech Conference 2025</h5>
                     <p class="card-text">Meet top speakers and learn the future of AI & Java.</p>
                     <p class="text-primary fw-bold">$99.00</p>
-                    <a href="#" class="btn btn-outline-primary btn-sm">Buy Ticket</a>
+                    <a href="${pageContext.request.contextPath}/signin" class="btn btn-outline-primary btn-sm">Buy Ticket</a>
                 </div>
             </div>
         </div>
@@ -132,7 +132,7 @@
                     <h5 class="card-title">Championship Finals</h5>
                     <p class="card-text">Watch the most intense football match of the season!</p>
                     <p class="text-primary fw-bold">$49.99</p>
-                    <a href="#" class="btn btn-outline-primary btn-sm">Buy Ticket</a>
+                    <a href="${pageContext.request.contextPath}/signin" class="btn btn-outline-primary btn-sm">Buy Ticket</a>
                 </div>
             </div>
         </div>

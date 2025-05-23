@@ -1,6 +1,8 @@
-package com.example.ticket.contoller;
+package com.example.ticket.contoller.auth;
 
+import com.example.ticket.entity.enums.Role;
 import com.example.ticket.service.AuthService;
+import com.example.ticket.utils.Util;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -15,7 +17,15 @@ public class SignInController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("/auth/signin.jsp").forward(req, resp);
+        if (!Util.isSessionValid(req)) {
+            req.getRequestDispatcher("/auth/signin.jsp").forward(req, resp);
+        } else if (Util.isSessionValid(req) && req.getSession().getAttribute("role").equals(Role.ADMIN)) {
+            resp.sendRedirect("/admin");
+        } else if (Util.isSessionValid(req) && req.getSession().getAttribute("role").equals(Role.USER)) {
+            resp.sendRedirect("/user");
+        } else {
+            resp.sendRedirect("/signin");
+        }
     }
 
     @Override

@@ -13,6 +13,8 @@ public class Ticket {
     @ManyToOne
     private Event event;
 
+    private String price;
+
     @ManyToOne
     private User user;
 

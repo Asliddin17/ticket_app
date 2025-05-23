@@ -26,12 +26,11 @@ public class AuthService {
             User singleResult = entityManager.createQuery("select u from User u where u.email= :email and u.password= :pass", User.class).setParameter("email", email).setParameter("pass", pass).getSingleResultOrNull();
             if (singleResult != null) {
                 req.getSession().setAttribute("user_id", singleResult.getId());
-                if (singleResult.getRole().equals(Role.ADMIN)) {
-                    req.getSession().setAttribute("role", Role.ADMIN);
-                    req.getRequestDispatcher("/dashboard/admin.jsp").forward(req, resp);
+                req.getSession().setAttribute("role", singleResult.getRole());
+                if (req.getSession().getAttribute("role") == Role.USER) {
+                    resp.sendRedirect("/user");
                 } else {
-                    req.getSession().setAttribute("role", Role.USER);
-                    req.getRequestDispatcher("/dashboard/user.jsp").forward(req, resp);
+                    resp.sendRedirect("/admin");
                 }
             } else {
                 req.setAttribute("message", "Invalid email or password. Please try again.");

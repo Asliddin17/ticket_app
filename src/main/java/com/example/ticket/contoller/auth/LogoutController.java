@@ -1,4 +1,4 @@
-package com.example.ticket.contoller;
+package com.example.ticket.contoller.auth;
 
 import com.example.ticket.service.AuthService;
 import jakarta.servlet.ServletException;

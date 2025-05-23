@@ -1,7 +1,8 @@
 package com.example.ticket.contoller;
 
+import com.example.ticket.db.JpaConnection;
 import com.example.ticket.entity.Attachment;
-import com.example.ticket.repository.AttachmentRepository;
+import jakarta.persistence.EntityManager;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.annotation.WebServlet;
@@ -12,35 +13,27 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Optional;
-import java.util.UUID;
 
 @WebServlet("/download")
 public class DownloadController extends HttpServlet {
-    private final AttachmentRepository attachmentRepository = new AttachmentRepository();
+    private final JpaConnection jpaConnection = JpaConnection.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        EntityManager entityManager = jpaConnection.entityManager();
         resp.setContentType("application/octet-stream");
 
-        Optional<Attachment> photoById = attachmentRepository.getPhotoById(UUID.fromString(req.getParameter("fileId")));
+        Attachment attachment = entityManager.find(Attachment.class, req.getParameter("fileId"));
+        resp.setHeader("Content-disposition", "inline; filename=\"" + attachment.getName() + "\"");
 
-        if (photoById.isPresent()) {
-            Attachment attachment = photoById.get();
-            resp.setHeader("Content-disposition", "inline; filename=\"" + attachment.getName() + "\"");
-
-            File file = new File(attachment.getPath());
-            if (file.exists()) {
-                FileInputStream fileInputStream = new FileInputStream(file);
-                byte[] content = new byte[fileInputStream.available()];
-                fileInputStream.read(content);
-                ServletOutputStream outputStream = resp.getOutputStream();
-                outputStream.write(content);
-                fileInputStream.close();
-            }
-
-        } else {
-            resp.sendRedirect("/admin");
+        File file = new File(attachment.getPath());
+        if (file.exists()) {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            byte[] content = new byte[fileInputStream.available()];
+            fileInputStream.read(content);
+            ServletOutputStream outputStream = resp.getOutputStream();
+            outputStream.write(content);
+            fileInputStream.close();
         }
     }
 }

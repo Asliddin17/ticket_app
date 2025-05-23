@@ -2,14 +2,12 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <html>
 <head>
-    <title>Title</title>
+    <title>Event Management</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="${pageContext.request.contextPath}/dashboard/assets/style.css" rel="stylesheet">
-
     <style>
-
         .table td.description {
             white-space: nowrap;
             overflow: hidden;
@@ -23,9 +21,55 @@
             text-overflow: ellipsis;
             max-width: 150px;
         }
+
+        .is-invalid {
+            border-color: #dc3545 !important;
+        }
+
+        .is-valid {
+            border-color: #198754 !important;
+        }
+
+        .image-input-hidden {
+            display: none !important;
+        }
+
+        .image-preview {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .image-preview-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .remove-image {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #c21e1e;
+            color: #ffffff;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
+
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
     <div class="container-fluid">
         <a class="navbar-brand" href="${pageContext.request.contextPath}/admin">Product Management</a>
@@ -71,13 +115,13 @@
 </nav>
 
 <div class="container my-5">
-    <h1 class="text-center mb-4">Product Management</h1>
+    <h1 class="text-center mb-4">Event Management</h1>
     <div class="search-container">
         <div class="input-group">
             <form action="${pageContext.request.contextPath}/search" method="POST" class="input-group">
-                <label for="searchInput" class="visually-hidden">Search products</label>
+                <label for="searchInput" class="visually-hidden">Search events</label>
                 <input type="text" name="keyword" id="searchInput" class="form-control"
-                       placeholder="Search products...">
+                       placeholder="Search events...">
                 <button type="submit" class="btn btn-outline-secondary">Search</button>
             </form>
         </div>
@@ -89,48 +133,61 @@
                 <th>Image</th>
                 <th>Name</th>
                 <th>Description</th>
-                <th>Price</th>
+                <th>Date</th>
+                <th>Capacity</th>
+                <th>Status</th>
                 <th>Actions</th>
             </tr>
             </thead>
-            <tbody id="productTable">
-
-            <c:forEach items="${products}" var="pr">
+            <tbody id="eventTable">
+            <c:forEach items="${events}" var="event">
                 <tr>
-                    <td><img src="${pageContext.request.contextPath}/download?fileId=${pr.attachmentId}"
-                             class="table-image" alt="404"
-                             style="width: 50px; height: auto;"></td>
-                    <td class="name">${pr.name}</td>
-                    <td class="description text-truncate" data-full="${pr.description}">${pr.description}</td>
-                    <td>${pr.price}</td>
+                    <td>
+                        <c:if test="${not empty event.attachmentId}">
+                            <img src="${pageContext.request.contextPath}/download?fileId=${event.attachmentId}"
+                                 class="table-image" alt="Event Image" style="width: 50px; height: auto;">
+                        </c:if>
+                        <c:if test="${empty event.attachmentId}">
+                            <img src="${pageContext.request.contextPath}/dashboard/assets/img/8136031.png"
+                                 class="table-image" alt="No Image" style="width: 50px; height: auto;">
+                        </c:if>
+                    </td>
+                    <td class="name">${event.name}</td>
+                    <td class="description text-truncate" data-full="${event.description}">${event.description}</td>
+                    <td>${event.date}</td>
+                    <td>${event.capacity}</td>
+                    <td>
+                    <span class="badge
+                        ${event.status == 'ACTIVE' ? 'bg-success' :
+                          event.status == 'INACTIVE' ? 'bg-danger' :
+                          event.status == 'CANCELLED' ? 'bg-warning' : ''}">
+                            ${event.status}
+                    </span>
+                    </td>
                     <td>
                         <div class="dropdown">
                             <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown"
                                     aria-expanded="false">⋮
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a
-                                        class="dropdown-item edit-button"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#editModal"
-                                        data-id="${pr.id}"
-                                        data-name="${pr.name}"
-                                        data-description="${pr.description}"
-                                        data-price="${pr.price}"
-                                        data-img="${pr.attachmentId}">
-                                    <i class="bi bi-pencil-square me-2"></i>Edit
-                                </a>
+                                <li>
+                                    <a class="dropdown-item edit-button"
+                                       data-bs-toggle="modal"
+                                       data-bs-target="#editModal"
+                                       data-id="${event.id}"
+                                       data-name="${event.name}"
+                                       data-description="${event.description}"
+                                       data-date="${event.date}"
+                                       data-capacity="${event.capacity}"
+                                       data-img="${event.attachmentId}">
+                                        <i class="bi bi-pencil-square me-2"></i>Edit
+                                    </a>
                                 </li>
                                 <li>
-
                                     <form action="${pageContext.request.contextPath}/delete" method="post">
-                                        <label>
-                                            <input type="text" value="${pr.id}" name="id" hidden disabled>
-                                        </label>
-                                        <button type="submit" class="btn">
-                                            <a
-                                                    class="dropdown-item"><i
-                                                    class="bi bi-trash me-2"></i>Delete</a>
+                                        <input type="hidden" name="id" value="${event.id}">
+                                        <button type="submit" class="dropdown-item">
+                                            <i class="bi bi-trash me-2"></i>Delete
                                         </button>
                                     </form>
                                 </li>
@@ -138,18 +195,16 @@
                         </div>
                     </td>
                 </tr>
-
             </c:forEach>
             </tbody>
         </table>
     </div>
 
-
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">Edit Product</h5>
+                    <h5 class="modal-title" id="editModalLabel">Edit Event</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -157,17 +212,18 @@
                           method="post" novalidate>
                         <input type="hidden" name="id">
                         <div class="mb-3">
-                            <label for="img" class="form-label">Product Image</label>
-                            <input type="file" name="img" class="form-control" id="img" accept="image/*">
+                            <label for="editImage" class="form-label">Event Image</label>
+                            <input type="file" name="img" class="form-control" id="editImage" accept="image/*">
                             <div class="image-preview-container d-none" id="editImagePreviewContainer">
                                 <img id="editImagePreview" class="image-preview" alt="Image Preview">
                                 <button type="button" class="remove-image" id="removeEditImage">
                                     <i class="bi bi-x" style="margin-top: 1px"></i>
                                 </button>
                             </div>
+                            <div class="invalid-feedback">Please upload an event image.</div>
                         </div>
                         <div class="mb-3">
-                            <label for="editName" class="form-label">Product Name</label>
+                            <label for="editName" class="form-label">Event Name</label>
                             <input type="text" class="form-control" id="editName" name="name" required minlength="3">
                             <div class="invalid-feedback">Name must be at least 3 characters.</div>
                         </div>
@@ -178,12 +234,16 @@
                             <div class="invalid-feedback">Description must be at least 10 characters.</div>
                         </div>
                         <div class="mb-3">
-                            <label for="editPrice" class="form-label">Price (USD)</label>
-                            <input type="text" class="form-control" id="editPrice" name="price" step="0.01" min="0"
-                                   required>
-                            <div class="invalid-feedback">Price must be a positive number.</div>
+                            <label for="editDate" class="form-label">Event Date</label>
+                            <input type="date" class="form-control" id="editDate" name="date" required min="2025-01-01">
+                            <div class="invalid-feedback">Date must be on or after January 1, 2025.</div>
                         </div>
-
+                        <div class="mb-3">
+                            <label for="editCapacity" class="form-label">Capacity</label>
+                            <input type="number" class="form-control" id="editCapacity" name="capacity" required min="1"
+                                   step="1">
+                            <div class="invalid-feedback">Capacity must be a positive number (at least 1).</div>
+                        </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">Edit</button>
                         </div>
@@ -203,50 +263,59 @@
 </c:if>
 
 <script>
+    // Edit button functionality
     document.querySelectorAll('.edit-button').forEach(button => {
         button.addEventListener('click', () => {
             const id = button.getAttribute('data-id');
             const name = button.getAttribute('data-name');
             const description = button.getAttribute('data-description');
-            const price = button.getAttribute('data-price');
+            const date = button.getAttribute('data-date');
+            const capacity = button.getAttribute('data-capacity');
             const imgId = button.getAttribute('data-img');
 
             document.querySelector('#editForm input[name="id"]').value = id;
             document.querySelector('#editForm input[name="name"]').value = name;
             document.querySelector('#editForm textarea[name="description"]').value = description;
-            document.querySelector('#editForm input[name="price"]').value = price;
+            document.querySelector('#editForm input[name="date"]').value = date;
+            document.querySelector('#editForm input[name="capacity"]').value = capacity;
 
             const preview = document.getElementById('editImagePreview');
             const container = document.getElementById('editImagePreviewContainer');
-            const previewLabel = document.getElementById('editImage').previousElementSibling;
             const inputFile = document.getElementById('editImage');
 
             if (imgId) {
-                preview.src = "/download?fileId=" + imgId;
+                preview.src = `${pageContext.request.contextPath}/download?fileId=${imgId}`;
                 container.classList.remove('d-none');
-                previewLabel.style.display = 'none';
                 inputFile.classList.add('image-input-hidden');
             } else {
                 container.classList.add('d-none');
-                previewLabel.style.display = 'block';
                 inputFile.classList.remove('image-input-hidden');
             }
         });
     });
 
-</script>
-
-
-<script>
-    document.querySelectorAll('#editForm input, #editForm textarea, #editForm select').forEach(input => {
+    // Input validation for edit form
+    document.querySelectorAll('#editForm input, #editForm textarea').forEach(input => {
         input.addEventListener('input', () => {
-            if (input.id === 'editPrice') {
-                input.value = input.value.replace(/[^0-9.]/g, '');
-                if (input.value.split('.').length > 2) {
-                    input.value = input.value.slice(0, -1);
+            if (input.id === 'editCapacity') {
+                input.value = input.value.replace(/[^0-9]/g, '');
+                if (input.value === '0' || parseInt(input.value) < 1) {
+                    input.value = '';
+                    input.classList.add('is-invalid');
+                    input.classList.remove('is-valid');
                 }
-                if (input.value.includes('.') && input.value.split('.')[1].length > 2) {
-                    input.value = input.value.slice(0, -1);
+            }
+            if (input.id === 'editDate') {
+                // Ensure date is on or after 2025
+                const selectedDate = new Date(input.value);
+                const minDate = new Date('2025-01-01');
+                const year = input.value.split('-')[0];
+                if (year.length !== 4 || selectedDate < minDate) {
+                    input.classList.add('is-invalid');
+                    input.classList.remove('is-valid');
+                    input.setCustomValidity('Date must be on or after January 1, 2025.');
+                } else {
+                    input.setCustomValidity('');
                 }
             }
             if (input.checkValidity()) {
@@ -259,30 +328,63 @@
         });
     });
 
+    // Image upload and preview for edit form
     document.getElementById('editImage').addEventListener('change', function () {
         const file = this.files[0];
         const preview = document.getElementById('editImagePreview');
-        const previewLabel = document.getElementById('editImage').previousElementSibling;
         const previewContainer = document.getElementById('editImagePreviewContainer');
         if (file) {
             preview.src = URL.createObjectURL(file);
             previewContainer.classList.remove('d-none');
-            previewLabel.style.display = 'none';
             this.classList.add('image-input-hidden');
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+        } else {
+            previewContainer.classList.add('d-none');
+            this.classList.remove('image-input-hidden');
+            this.classList.add('is-invalid');
         }
     });
 
     document.getElementById('removeEditImage').addEventListener('click', function () {
         const input = document.getElementById('editImage');
         const previewContainer = document.getElementById('editImagePreviewContainer');
-        const previewLabel = input.previousElementSibling;
         input.value = '';
         previewContainer.classList.add('d-none');
-        previewLabel.style.display = 'block';
         input.classList.remove('image-input-hidden');
+        input.classList.add('is-invalid');
+        input.classList.remove('is-valid');
     });
-</script>
-<script>
+
+    // Form submission validation
+    const editForm = document.getElementById('editForm');
+    editForm.addEventListener('submit', function (event) {
+        if (!editForm.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+            editForm.querySelectorAll('input, textarea').forEach(input => {
+                if (!input.checkValidity()) {
+                    input.classList.add('is-invalid');
+                    input.classList.remove('is-valid');
+                }
+            });
+        }
+        // Custom date validation
+        const eventDate = document.getElementById('editDate');
+        const selectedDate = new Date(eventDate.value);
+        const minDate = new Date('2025-01-01');
+        const year = eventDate.value.split('-')[0];
+        if (eventDate.value && (year.length !== 4 || selectedDate < minDate)) {
+            eventDate.setCustomValidity('Date must be on or after January 1, 2025.');
+            eventDate.classList.add('is-invalid');
+            eventDate.classList.remove('is-valid');
+        } else {
+            eventDate.setCustomValidity('');
+        }
+        editForm.classList.add('was-validated');
+    }, false);
+
+    // Description truncation
     document.querySelectorAll('.description').forEach(cell => {
         const fullText = cell.getAttribute('data-full');
         if (fullText.length > 65) {

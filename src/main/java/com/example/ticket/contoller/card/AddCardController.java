@@ -1,8 +1,8 @@
-package com.example.ticket.contoller;
+package com.example.ticket.contoller.card;
 
-import com.example.ticket.service.EventService;
+import com.example.ticket.service.CardService;
+import com.example.ticket.utils.Util;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,17 +10,14 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import static com.example.ticket.utils.Util.isSessionValid;
-
-@MultipartConfig
-@WebServlet("/event")
-public class AddEventController extends HttpServlet {
-    private final EventService eventService = new EventService();
+@WebServlet("/card")
+public class AddCardController extends HttpServlet {
+    private final CardService cardService = CardService.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (isSessionValid(req)) {
-            req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
+        if (Util.isSessionValid(req)) {
+            req.getRequestDispatcher("/dashboard/pages/card.jsp").forward(req, resp);
         } else {
             resp.sendRedirect("/signin");
         }
@@ -28,8 +25,10 @@ public class AddEventController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        eventService.addEvent(req, resp);
+        if (Util.isSessionValid(req)) {
+            cardService.addCard(req, resp);
+        } else {
+            resp.sendRedirect("/signin");
+        }
     }
 }
-
-

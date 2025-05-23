@@ -3,8 +3,12 @@ package com.example.ticket.utils;
 import com.example.ticket.entity.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.Part;
 
 public interface Util {
+
+    String path = "D:\\Personal\\photos\\";
+
     static User currentUser(HttpServletRequest request) {
         return (User) request.getSession().getAttribute("currentUser");
     }
@@ -43,5 +47,54 @@ public interface Util {
         }
 
         return true;
+    }
+
+    static boolean isValidBalance(String balance) {
+        if (balance == null) return false;
+        return balance.matches("\\d+(\\.\\d+)?");
+    }
+
+    static boolean isValidExpiryDate(String date) {
+        if (date == null) return false;
+        return date.matches("(0[1-9]|1[0-2])/\\d{2}");
+    }
+
+    static boolean isValidCardNumber(String number) {
+        if (number == null) return false;
+        String digitsOnly = number.replaceAll("\\s+", "");
+        return digitsOnly.matches("\\d{16}");
+    }
+
+    static boolean isValidCvv(String cvv) {
+        if (cvv == null) return false;
+        return cvv.matches("\\d{3}");
+    }
+
+    static boolean isValidEventName(String eventName) {
+        return eventName != null && !eventName.trim().isEmpty();
+    }
+
+    static boolean isValidDate(String date) {
+        return date != null && !date.trim().isEmpty();
+    }
+
+    static boolean isValidCapacity(String capacity) {
+        return capacity != null && !capacity.trim().isEmpty() && capacity.matches("\\d+");
+    }
+
+    static boolean isValidDescription(String description) {
+        return description != null && !description.trim().isEmpty();
+    }
+
+    static boolean isValidImage(Part img) {
+        if (img == null || img.getSize() == 0) {
+            return false;
+        }
+        String contentType = img.getContentType();
+        if (!contentType.startsWith("image/")) {
+            return false;
+        }
+        long maxFileSize = 5 * 1024 * 1024;
+        return img.getSize() <= maxFileSize;
     }
 }

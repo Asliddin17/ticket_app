@@ -113,7 +113,6 @@
                 <th scope="col">CVV</th>
                 <th scope="col">Expiry Date</th>
                 <th scope="col">Balance</th>
-                <th scope="col">Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -126,10 +125,6 @@
                     <td>${card.cardExpiryDate}</td>
                     <td>${card.cardCVV}</td>
                     <td>${card.balance}</td>
-                    <td>
-                        <button class="btn btn-sm btn-outline-primary btn-action">Edit</button>
-                        <button class="btn btn-sm btn-outline-danger btn-action">Delete</button>
-                    </td>
                 </tr>
                 <c:set var="i" value="${i + 1}"/>
             </c:forEach>
