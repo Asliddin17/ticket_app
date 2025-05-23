@@ -15,7 +15,7 @@ public class JpaConnection {
         EntityManager entityManager = entityManagerFactory.createEntityManager();
         return entityManager;
     }
-    private static JpaConnection jpaConnection;
+    public static JpaConnection jpaConnection;
     public static JpaConnection getInstance(){
         if (jpaConnection == null){
             jpaConnection = new JpaConnection();

@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -14,7 +15,7 @@ public class Event {
     private String id;
 
     private String name;
-    private LocalDate date;
+    private LocalDateTime date;
     private int capacity;
     private String attachmentId;
 

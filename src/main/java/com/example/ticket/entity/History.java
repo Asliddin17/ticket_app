@@ -7,6 +7,7 @@ import jakarta.persistence.OneToMany;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 @Entity
@@ -24,5 +25,5 @@ public class History {
     private Event event;
 
     private int count;
-    private LocalDate date;
+    private LocalDateTime date;
 }

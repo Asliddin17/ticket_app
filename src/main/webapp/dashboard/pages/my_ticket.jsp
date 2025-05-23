@@ -87,7 +87,7 @@
                             <hr class="dropdown-divider">
                         </li>
                         <li>
-                            <form action="${pageContext.request.contextPath}/logout" method="post" class="px-3">
+                            <form action="${pageContext.request.contextPath}/my-tickets" method="post" class="px-3">
                                 <button type="submit" class="btn btn-outline-danger btn-sm w-100">Log Out</button>
                             </form>
                         </li>
