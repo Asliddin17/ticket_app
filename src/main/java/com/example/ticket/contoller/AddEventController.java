@@ -28,6 +28,7 @@ public class AddEventController extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
         eventService.addEvent(req, resp);
     }
 }

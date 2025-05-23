@@ -8,6 +8,7 @@ import jakarta.servlet.http.Part;
 public interface Util {
 
     String path = "D:\\Personal\\photos\\";
+    String path2 = "C:\\Java\\photos\\";
 
     static User currentUser(HttpServletRequest request) {
         return (User) request.getSession().getAttribute("currentUser");

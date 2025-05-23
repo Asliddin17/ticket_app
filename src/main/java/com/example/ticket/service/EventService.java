@@ -49,10 +49,10 @@ public class EventService {
                     .name(img.getSubmittedFileName())
                     .suffix(img.getContentType().split("/")[1])
                     .fileSize(img.getInputStream().available())
-                    .path(path.concat(imgId).concat(".").concat(img.getContentType().split("/")[1]))
+                    .path(path2.concat(imgId).concat(".").concat(img.getContentType().split("/")[1]))
                     .build();
 
-            try (FileOutputStream outputStream = new FileOutputStream(path.concat(imgId).concat(".").concat(img.getContentType().split("/")[1]))) {
+            try (FileOutputStream outputStream = new FileOutputStream(path2.concat(imgId).concat(".").concat(img.getContentType().split("/")[1]))) {
                 outputStream.write(img.getInputStream().readAllBytes());
             }
             entityManager.persist(attachment);
