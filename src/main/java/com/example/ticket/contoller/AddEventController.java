@@ -21,6 +21,8 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.UUID;
 
+import static com.example.ticket.utils.Util.isSessionValid;
+
 @WebServlet("/event")
 public class AddEventController extends HttpServlet {
     EventService eventService = new EventService();
@@ -28,7 +30,11 @@ public class AddEventController extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
+        if (isSessionValid(req)) {
+            req.getRequestDispatcher("/dashboard/pages/add.jsp").forward(req, resp);
+        } else {
+            resp.sendRedirect("/login");
+        }
     }
 
     @Override

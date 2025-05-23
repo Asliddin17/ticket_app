@@ -1,14 +1,20 @@
 package com.example.ticket.entity;
 
+import com.example.ticket.entity.enums.Role;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import javax.management.relation.Role;
 import java.util.List;
 
 @Data
 @Entity
 @Table(name = "users")
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
     @Id
     private String id;

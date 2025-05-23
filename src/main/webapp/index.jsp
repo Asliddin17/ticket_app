@@ -82,7 +82,7 @@
 <div style="margin-top: 10px" id="eventCarousel" class="carousel slide my-5" data-bs-ride="carousel">
     <div class="carousel-inner">
         <div class="carousel-item active">
-            <img src="https://www.lfs.com.my/webimg/advertisement_web/advertisement_web_574.jpg" class="d-block w-100" alt="Event 1">
+            <img src="https://galaktika-omsk.ru/_next/image/?url=https%3A%2F%2Fgalaktika-omsk.ru%2Fupload%2Fb%2Ffile_189_4864.jpg&w=3840&q=100" class="d-block w-100" alt="Event 1">
         </div>
         <div class="carousel-item">
             <img src="https://d34080pnh6e62j.cloudfront.net/images/contentCategoryMoblieLarge/1738326942_web-category-banner-size-1920x600px.jpg" class="d-block w-100" alt="Event 2">
