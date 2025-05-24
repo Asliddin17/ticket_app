@@ -1,25 +1,20 @@
 package com.example.ticket.payload;
 
-import com.example.ticket.entity.Attachment;
 import com.example.ticket.entity.enums.Status;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-
-@Data
 @Builder
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class EventDTO {
+public class TicketDTO {
     private String id;
-    private String name;
-    private LocalDate date;
-    private Double price;
-    private int capacity;
-    private String attachmentId;
+    private String placeNumber;
+    private String eventName;
     private Status status;
-    private String description;
+    private String attachmentId;
+
 }

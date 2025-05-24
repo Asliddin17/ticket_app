@@ -11,7 +11,7 @@ public interface Util {
     String path2 = "C:\\Java\\photos\\";
 
     static User currentUser(HttpServletRequest request) {
-        return (User) request.getSession().getAttribute("currentUser");
+        return (User) request.getSession().getAttribute("user_id");
     }
 
     static boolean isSessionValid(HttpServletRequest req) {

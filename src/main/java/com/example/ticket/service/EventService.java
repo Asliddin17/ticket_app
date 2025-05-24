@@ -7,6 +7,7 @@ import com.example.ticket.entity.Ticket;
 import com.example.ticket.entity.User;
 import com.example.ticket.entity.enums.Status;
 import com.example.ticket.payload.EventDTO;
+import com.example.ticket.payload.PlacesDTO;
 import com.example.ticket.utils.Util;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -19,6 +20,7 @@ import java.io.FileOutputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -80,19 +82,25 @@ public class EventService {
 
     @SneakyThrows
     public void editEvent(HttpServletRequest req, HttpServletResponse resp) {
-        User currentUser = currentUser(req);
-        if (currentUser == null) {
+//        User currentUser = currentUser(req);
+        String id = req.getSession().getAttribute("user_id").toString();
+        if (id == null) {
             req.setAttribute("message", "please sign in first");
             req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
             return;
         }
+
+        System.err.println("Current");
+
         String eventName = req.getParameter("eventName");
         String date = req.getParameter("date");
         String capacity = req.getParameter("capacity");
         String attachmentId = req.getParameter("attachmentId");
         String status = req.getParameter("status");
         String description = req.getParameter("description");
-        String ticketId = req.getParameter("ticketId");
+//        String ticketId = req.getParameter("ticketId");
+
+        System.err.println(eventName + " " + date + " " + capacity + " " + attachmentId + " " + status + " " + description);
 
         if (eventName == null || eventName.isEmpty()) {
             req.setAttribute("message", "Please enter event name");
@@ -163,15 +171,15 @@ public class EventService {
             event.setStatus(eventStatus);
             event.setDescription(description);
 
-            if (ticketId != null && !ticketId.isEmpty()) {
-                List<Ticket> tickets = entityManager.createQuery
-                                ("select t from Ticket t where t.id =:ticketId", Ticket.class)
-                        .setParameter("ticketId", ticketId)
-                        .getResultList();
-                event.setTickets(tickets);
-            } else {
-                event.setTickets(null);
-            }
+//            if (ticketId != null && !ticketId.isEmpty()) {
+//                List<Ticket> tickets = entityManager.createQuery
+//                                ("select t from Ticket t where t.id =:ticketId", Ticket.class)
+//                        .setParameter("ticketId", ticketId)
+//                        .getResultList();
+//                event.setTickets(tickets);
+//            } else {
+//                event.setTickets(null);
+//            }
             entityManager.merge(event);
             transaction.commit();
             resp.sendRedirect("/dashboard");
@@ -189,8 +197,9 @@ public class EventService {
 
     @SneakyThrows
     public void changeStatusEvent(HttpServletRequest req, HttpServletResponse resp) {
-        User currentUser = Util.currentUser(req);
-        if (currentUser == null) {
+        String userId = req.getSession().getAttribute("user_id").toString();
+
+        if (userId == null) {
             req.setAttribute("message", "Please sign in first");
             req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
             return;
@@ -215,7 +224,7 @@ public class EventService {
         try {
             transaction.begin();
 
-            Event event = entityManager.find(Event.class, UUID.fromString(eventId));
+            Event event = entityManager.find(Event.class, eventId);
             if (event == null) {
                 req.setAttribute("message", "Please enter event name");
                 req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
@@ -234,8 +243,10 @@ public class EventService {
             entityManager.merge(event);
             transaction.commit();
 
-            resp.sendRedirect("/dashboard");
+            resp.sendRedirect("/admin");
         } catch (Exception e) {
+            System.err.println(e.getMessage());
+
             if (transaction.isActive()) {
                 transaction.rollback();
             }
@@ -256,6 +267,7 @@ public class EventService {
                         .id(event.getId())
                         .name(event.getName())
                         .date(event.getDate())
+                        .price(event.getPrice())
                         .capacity(event.getCapacity())
                         .attachmentId(event.getAttachment().getId())
                         .status(event.getStatus())
@@ -264,4 +276,39 @@ public class EventService {
                 )
                 .collect(Collectors.toList());
     }
+
+    public List<PlacesDTO> placesDTOS(String eventId) {
+        EntityManager entityManager = jpaConnection.entityManager();
+        Event event = entityManager.find(Event.class, eventId);
+
+        List<Ticket> tickets = entityManager.createQuery(
+                        "select t from Ticket t where t.event.id = :eventId and t.status='ACTIVE'", Ticket.class)
+                .setParameter("eventId", eventId)
+                .getResultList();
+
+        if (tickets.isEmpty()) {
+            List<PlacesDTO> result = new ArrayList<>();
+            result.add(PlacesDTO.builder()
+                    .price(event.getPrice())
+                    .capacity(event.getCapacity())
+                    .build());
+            return result;
+        }
+
+        List<PlacesDTO> collect = tickets.stream()
+                .map(ticket -> PlacesDTO.builder()
+                        .eventId(ticket.getEvent().getId())
+                        .placeNumber(ticket.getPlaceNumber())
+                        .price(ticket.getEvent().getPrice())
+                        .capacity(event.getCapacity())
+                        .build())
+                .collect(Collectors.toList());
+
+        entityManager.close();
+
+        collect.forEach(System.out::println);
+
+        return collect;
+    }
+
 }

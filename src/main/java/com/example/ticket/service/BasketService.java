@@ -1,7 +1,6 @@
 package com.example.ticket.service;
 
 import com.example.ticket.db.JpaConnection;
-import com.example.ticket.entity.Basket;
 import com.example.ticket.entity.Ticket;
 import com.example.ticket.entity.User;
 import com.example.ticket.entity.enums.Status;
@@ -25,12 +24,12 @@ public class BasketService {
         User currentUser = Util.currentUser(req);
 
         transaction.begin();
-        Basket basket = new Basket();
-        basket.setId(UUID.randomUUID().toString());
-        basket.setUser(currentUser);
-        basket.setStatus(Status.ACTIVE);
+//        Basket basket = new Basket();
+//        basket.setId(UUID.randomUUID().toString());
+//        basket.setUser(currentUser);
+//        basket.setStatus(Status.ACTIVE);
 
-        entityManager.persist(basket);
+//        entityManager.persist(basket);
         transaction.commit();
         entityManager.close();
     }
@@ -60,28 +59,28 @@ public class BasketService {
 
         transaction.begin();
 
-        Basket basket = entityManager.find(Basket.class, basketId);
-        if (basket == null) {
-            req.setAttribute("message", "basket not found");
-            req.getRequestDispatcher("/dashboard/pages/basket.jsp").forward(req, resp);
-            entityManager.close();
-            return;
-        }
-
-        if (!basket.getUser().getId().equals(currentUser.getId())) {
-            req.setAttribute("message", "You are not authorized to delete this basket");
-            req.getRequestDispatcher("/dashboard/pages/basket.jsp").forward(req, resp);
-            transaction.rollback();
-            entityManager.close();
-            return;
-        }
-        for (String ticketId : ticketIds) {
-            Ticket ticket = entityManager.find(Ticket.class, ticketId);
-            if (ticket != null && basket.equals(ticket.getBasket())) {
-                ticket.setBasket(null); // Remove the ticket from the basket
-                entityManager.merge(ticket);
-            }
-        }
+//        Basket basket = entityManager.find(Basket.class, basketId);
+//        if (basket == null) {
+//            req.setAttribute("message", "basket not found");
+//            req.getRequestDispatcher("/dashboard/pages/basket.jsp").forward(req, resp);
+//            entityManager.close();
+//            return;
+//        }
+//
+//        if (!basket.getUser().getId().equals(currentUser.getId())) {
+//            req.setAttribute("message", "You are not authorized to delete this basket");
+//            req.getRequestDispatcher("/dashboard/pages/basket.jsp").forward(req, resp);
+//            transaction.rollback();
+//            entityManager.close();
+//            return;
+//        }
+//        for (String ticketId : ticketIds) {
+//            Ticket ticket = entityManager.find(Ticket.class, ticketId);
+//            if (ticket != null && basket.equals(ticket.getBasket())) {
+//                ticket.setBasket(null); // Remove the ticket from the basket
+//                entityManager.merge(ticket);
+//            }
+//        }
         transaction.commit();
         entityManager.close();
     }

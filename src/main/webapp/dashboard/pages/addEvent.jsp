@@ -107,12 +107,12 @@
             <ul class="navbar-nav ms-auto align-items-center">
                 <li class="nav-item me-3">
                     <a class="nav-link position-relative" href="${pageContext.request.contextPath}/admin">
-                        <i class="bi bi-table"></i> <span>Products</span>
+                        <i class="bi bi-table"></i> <span>Events</span>
                     </a>
                 </li>
                 <li class="nav-item me-3">
-                    <a class="nav-link position-relative" href="${pageContext.request.contextPath}/product">
-                        <i class="bi bi-plus-circle"></i> <span>Add product</span>
+                    <a class="nav-link position-relative" href="${pageContext.request.contextPath}/event">
+                        <i class="bi bi-plus-circle"></i> <span>Add event</span>
                     </a>
                 </li>
 
@@ -123,7 +123,7 @@
                         <i class="bi bi-person-circle fs-5 me-1"></i> <span>Account</span>
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/profile">My Profile</a>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/">My Profile</a>
                         </li>
                         <li>
                             <hr class="dropdown-divider">
