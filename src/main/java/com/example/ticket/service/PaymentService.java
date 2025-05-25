@@ -44,6 +44,7 @@ public class PaymentService {
                         .date(LocalDateTime.now())
                         .event(event)
                         .user(user)
+                        .by("Ticket purchased")
                         .ticket(build)
                         .build()
                 );

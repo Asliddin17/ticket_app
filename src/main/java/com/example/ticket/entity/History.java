@@ -27,6 +27,8 @@ public class History {
     @ManyToOne
     private Ticket ticket;
 
+    private String by;
+
     @ManyToOne
     private Event event;
 

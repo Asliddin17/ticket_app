@@ -1,10 +1,7 @@
 package com.example.ticket.service;
 
 import com.example.ticket.db.JpaConnection;
-import com.example.ticket.entity.Card;
-import com.example.ticket.entity.Event;
-import com.example.ticket.entity.Ticket;
-import com.example.ticket.entity.User;
+import com.example.ticket.entity.*;
 import com.example.ticket.entity.enums.Status;
 import com.example.ticket.payload.TicketDTO;
 import com.example.ticket.utils.Util;
@@ -14,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -117,6 +115,15 @@ public class TicketService {
             ticket.setStatus(Status.CANCELLED);
             Card card = entityManager.createQuery("select c from Card c where c.owner.id=:ownerId", Card.class).setParameter("ownerId", userId).getSingleResultOrNull();
             card.setBalance(card.getBalance() + ticket.getEvent().getPrice());
+            entityManager.persist(History.builder()
+                    .id(UUID.randomUUID().toString())
+                    .ticket(ticket)
+                    .user(entityManager.find(User.class, userId.toString()))
+                    .event(ticket.getEvent())
+                    .by("Ticket cancelled by you")
+                    .date(LocalDateTime.now())
+                    .count(0)
+                    .build());
 
             entityManager.persist(card);
             entityManager.merge(ticket);

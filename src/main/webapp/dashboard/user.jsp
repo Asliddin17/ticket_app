@@ -152,9 +152,9 @@
             <ul class="navbar-nav ms-auto align-items-center">
                 <li class="nav-item me-3">
                     <a class="nav-link d-flex align-items-center gap-1"
-                       href="${pageContext.request.contextPath}/basket">
-                        <i class="bi bi-cart2 fs-5" style="margin-top: -2px"></i>
-                        <span>Basket</span>
+                       href="${pageContext.request.contextPath}/history">
+                        <i class="bi bi-clock-history fs-5"></i>
+                        <span>History</span>
                     </a>
                 </li>
                 <li class="nav-item me-3">
@@ -215,16 +215,6 @@
 
 <div class="container my-5">
     <h1 class="text-center mb-4">Events</h1>
-    <div class="search-container">
-        <div class="input-group">
-            <form action="${pageContext.request.contextPath}/search" method="POST" class="input-group">
-                <label for="searchInput" class="visually-hidden">Search events</label>
-                <input type="text" name="keyword" id="searchInput" class="form-control"
-                       placeholder="Search events...">
-                <button type="submit" class="btn search-image-btn">Search</button>
-            </form>
-        </div>
-    </div>
     <div id="userView" class="row row-cols-1 row-cols-md-3 g-4">
         <c:forEach items="${events}" var="event">
             <div class="col">

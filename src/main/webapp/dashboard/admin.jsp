@@ -15,12 +15,14 @@
             height: auto;
             border-radius: 5px;
         }
+
         .description {
             max-width: 300px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
         .name {
             max-width: 150px;
             white-space: nowrap;
@@ -41,12 +43,12 @@
             <ul class="navbar-nav ms-auto align-items-center">
                 <li class="nav-item me-3">
                     <a class="nav-link" href="${pageContext.request.contextPath}/admin">
-                        <i class="bi bi-table"></i> Products
+                        <i class="bi bi-table"></i> Event
                     </a>
                 </li>
                 <li class="nav-item me-3">
-                    <a class="nav-link" href="${pageContext.request.contextPath}/product">
-                        <i class="bi bi-plus-circle"></i> Add Product
+                    <a class="nav-link" href="${pageContext.request.contextPath}/event">
+                        <i class="bi bi-plus-circle"></i> Add event
                     </a>
                 </li>
                 <li class="nav-item dropdown">
@@ -55,8 +57,11 @@
                         <i class="bi bi-person-circle"></i> Account
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/profile">My Profile</a></li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/profile">My Profile</a>
+                        </li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li>
                             <form action="${pageContext.request.contextPath}/logout" method="post">
                                 <button type="submit" class="dropdown-item btn btn-outline-danger">Log Out</button>
@@ -71,14 +76,7 @@
 
 <div class="container mt-5 pt-4">
     <h1 class="text-center mb-4">Event Management</h1>
-    <div class="row mb-3">
-        <div class="col-md-6 offset-md-3">
-            <form action="${pageContext.request.contextPath}/search" method="POST" class="input-group">
-                <input type="text" name="keyword" class="form-control" placeholder="Search events...">
-                <button type="submit" class="btn btn-outline-secondary">Search</button>
-            </form>
-        </div>
-    </div>
+
     <div class="table-responsive">
         <table class="table table-striped align-middle">
             <thead>
@@ -116,7 +114,9 @@
                     </td>
                     <td>
                         <div class="dropdown">
-                            <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">⋮</button>
+                            <button class="btn btn-sm btn-secondary dropdown-toggle" type="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">⋮
+                            </button>
                             <ul class="dropdown-menu">
                                 <li>
                                     <a class="dropdown-item btn btn-outline-primary edit-button"
@@ -178,12 +178,14 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="editForm" action="${pageContext.request.contextPath}/my-tickets" method="post" enctype="multipart/form-data">
+                    <form id="editForm" action="${pageContext.request.contextPath}/edit" method="post"
+                          enctype="multipart/form-data">
                         <input type="hidden" name="id" id="eventId">
-                        <input type="hidden" name="existingAttachmentId" id="existingAttachmentId">
+                        <input type="hidden" name="attachmentId" id="existingAttachmentId">
                         <div class="mb-3">
                             <label for="eventName" class="form-label">Event Name</label>
-                            <input type="text" class="form-control" id="eventName" name="eventName" required minlength="3">
+                            <input type="text" class="form-control" id="eventName" name="eventName" required
+                                   minlength="3">
                             <div class="invalid-feedback">Name must be at least 3 characters.</div>
                         </div>
                         <div class="mb-3">
@@ -193,12 +195,14 @@
                         </div>
                         <div class="mb-3">
                             <label for="capacity" class="form-label">Capacity</label>
-                            <input type="number" class="form-control" id="capacity" name="capacity" required min="1" step="1">
+                            <input type="number" class="form-control" id="capacity" name="capacity" required min="1"
+                                   step="1">
                             <div class="invalid-feedback">Capacity must be a positive number (at least 1).</div>
                         </div>
                         <div class="mb-3">
                             <label for="attachmentId" class="form-label">Event Image</label>
-                            <input type="file" class="form-control" id="attachmentId" name="attachmentId" accept="image/*">
+                            <input type="file" class="form-control" id="attachmentId" name="attachmentId"
+                                   accept="image/*">
                             <div class="invalid-feedback">Please upload an event image (optional).</div>
                         </div>
                         <div class="mb-3">
@@ -212,7 +216,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control" id="description" name="description" required minlength="10"></textarea>
+                            <textarea class="form-control" id="description" name="description" required
+                                      minlength="10"></textarea>
                             <div class="invalid-feedback">Description must be at least 10 characters.</div>
                         </div>
                         <button type="submit" class="btn btn-primary">Save Changes</button>
@@ -235,7 +240,15 @@
             const status = button.getAttribute('data-status') || 'ACTIVE';
             const description = button.getAttribute('data-description') || '';
 
-            console.log('Edit button clicked with data:', { id, eventName, date, capacity, attachmentId, status, description });
+            console.log('Edit button clicked with data:', {
+                id,
+                eventName,
+                date,
+                capacity,
+                attachmentId,
+                status,
+                description
+            });
 
             // DOM elementlarni tekshirish
             const form = document.getElementById('editForm');

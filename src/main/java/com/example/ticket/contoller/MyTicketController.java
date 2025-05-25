@@ -17,12 +17,10 @@ import java.io.IOException;
 public class MyTicketController extends HttpServlet {
     EventService eventService = new EventService();
     private final TicketService ticketService = new TicketService();
-    JpaConnection jpaConnection = JpaConnection.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         if (Util.isSessionValid(req)) {
-            System.err.println(req.getSession().getAttribute("user_id"));
             req.setAttribute("tickets", ticketService.getActiveTickets(req.getSession().getAttribute("user_id").toString()));
             req.getRequestDispatcher("/dashboard/pages/my_ticket.jsp").forward(req, resp);
         }else {
@@ -30,8 +28,8 @@ public class MyTicketController extends HttpServlet {
         }
     }
 
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        eventService.editEvent(req, resp);
-    }
+//    @Override
+//    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+//        eventService.editEvent(req, resp);
+//    }
 }

@@ -98,28 +98,24 @@
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
     <div class="container-fluid">
-        <a class="navbar-brand" href="${pageContext.request.contextPath}/user">Product Management</a>
+        <a class="navbar-brand" href="${pageContext.request.contextPath}/user">Event Management</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
                 <li class="nav-item"></li>
                 <li class="nav-item"></li>
             </ul>
-
             <ul class="navbar-nav ms-auto align-items-center">
-
                 <li class="nav-item me-3">
                     <a class="nav-link d-flex align-items-center gap-1"
-                       href="${pageContext.request.contextPath}/basket">
-                        <i class="bi bi-cart2 fs-5" style="margin-top: -2px"></i>
-                        <span>Basket</span>
+                       href="${pageContext.request.contextPath}/history">
+                        <i class="bi bi-clock-history fs-5"></i>
+                        <span>History</span>
                     </a>
                 </li>
-
                 <li class="nav-item me-3">
                     <a class="nav-link d-flex align-items-center gap-1"
                        href="${pageContext.request.contextPath}/my-tickets">
@@ -127,7 +123,6 @@
                         <span>My Tickets</span>
                     </a>
                 </li>
-
                 <li class="nav-item me-3 dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center gap-1" href="#" role="button"
                        data-bs-toggle="dropdown" aria-expanded="false">
@@ -152,7 +147,6 @@
                         </li>
                     </ul>
                 </li>
-
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center gap-1" href="#" id="navbarDropdown"
                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -168,12 +162,11 @@
                         </li>
                         <li>
                             <form action="${pageContext.request.contextPath}/logout" method="post" class="px-3">
-                                <button type="submit" class="btn btn-outline-danger btn-sm w-100">Log Out</button>
+                                <button type="submit" class="btn btn-logout btn-sm w-100">Log Out</button>
                             </form>
                         </li>
                     </ul>
                 </li>
-
             </ul>
         </div>
     </div>
