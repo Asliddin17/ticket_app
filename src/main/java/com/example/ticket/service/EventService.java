@@ -3,9 +3,11 @@ package com.example.ticket.service;
 import com.example.ticket.db.JpaConnection;
 import com.example.ticket.entity.Attachment;
 import com.example.ticket.entity.Event;
+import com.example.ticket.entity.Ticket;
 import com.example.ticket.entity.User;
 import com.example.ticket.entity.enums.Status;
 import com.example.ticket.payload.EventDTO;
+import com.example.ticket.payload.PlacesDTO;
 import com.example.ticket.utils.Util;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -19,9 +21,12 @@ import java.io.FileOutputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static com.example.ticket.utils.Util.*;
 
 public class EventService {
     JpaConnection jpaConnection = JpaConnection.getInstance();
@@ -36,8 +41,8 @@ public class EventService {
         String description = req.getParameter("description");
         Part img = req.getPart("img");
 
-        if (Util.isValidEventName(eventName) && isValidDate(date) && Util.isValidCapacity(capacity)
-                && Util.isValidDescription(description) && Util.isValidImage(img)) {
+        if (isValidDate(date) && isValidEventName(eventName) && isValidCapacity(capacity)
+                && isValidDescription(description) && isValidImage(img)) {
 
             entityManager.getTransaction().begin();
 
@@ -47,10 +52,10 @@ public class EventService {
                     .name(img.getSubmittedFileName())
                     .suffix(img.getContentType().split("/")[1])
                     .fileSize(img.getInputStream().available())
-                    .path(Util.path2.concat(imgId).concat(".").concat(img.getContentType().split("/")[1]))
+                    .path(path2.concat(imgId).concat(".").concat(img.getContentType().split("/")[1]))
                     .build();
 
-            try (FileOutputStream outputStream = new FileOutputStream(attachment.getPath())) {
+            try (FileOutputStream outputStream = new FileOutputStream(path2.concat(imgId).concat(".").concat(img.getContentType().split("/")[1]))) {
                 outputStream.write(img.getInputStream().readAllBytes());
             }
             entityManager.persist(attachment);
@@ -78,65 +83,38 @@ public class EventService {
 
     @SneakyThrows
     public void editEvent(HttpServletRequest req, HttpServletResponse resp) {
-        User currentUser = Util.currentUser(req);
+        User currentUser = currentUser(req);
         if (currentUser == null) {
-            req.setAttribute("message", "Please sign in first");
-            req.setAttribute("events", getAllEventsForAdmin());
-            req.getRequestDispatcher("/dashboard").forward(req, resp);
+            req.setAttribute("message", "please sign in first");
+            req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
             return;
         }
-
-        String eventId = req.getParameter("id");
-        String name = req.getParameter("name");
+        String eventName = req.getParameter("eventName");
         String date = req.getParameter("date");
         String capacity = req.getParameter("capacity");
-        String description = req.getParameter("description");
+        String attachmentId = req.getParameter("attachmentId");
         String status = req.getParameter("status");
-        Part img = req.getPart("img");
+        String description = req.getParameter("description");
+        String ticketId = req.getParameter("ticketId");
 
-        // Validate inputs
-        if (eventId == null || eventId.trim().isEmpty()) {
-            req.setAttribute("message", "Invalid event ID");
-            req.setAttribute("events", getAllEventsForAdmin());
-            req.getRequestDispatcher("/dashboard").forward(req, resp);
+        if (eventName == null || eventName.isEmpty()) {
+            req.setAttribute("message", "Please enter event name");
+            req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
             return;
         }
-        if (!Util.isValidEventName(name)) {
-            req.setAttribute("message", "Please enter a valid event name (at least 3 characters)");
-            req.setAttribute("events", getAllEventsForAdmin());
-            req.getRequestDispatcher("/dashboard").forward(req, resp);
+        if (date == null || date.isEmpty()) {
+            req.setAttribute("message", "Please enter event date");
+            req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
             return;
         }
-        if (!isValidDate(date)) {
-            req.setAttribute("message", "Please enter a valid event date (on or after 2025-01-01)");
-            req.setAttribute("events", getAllEventsForAdmin());
-            req.getRequestDispatcher("/dashboard").forward(req, resp);
+        if (capacity == null || capacity.isEmpty()) {
+            req.setAttribute("message", "Please enter event capacity");
+            req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
             return;
         }
-        if (!Util.isValidCapacity(capacity)) {
-            req.setAttribute("message", "Please enter a valid capacity (positive number)");
-            req.setAttribute("events", getAllEventsForAdmin());
-            req.getRequestDispatcher("/dashboard").forward(req, resp);
-            return;
-        }
-        if (!Util.isValidDescription(description)) {
-            req.setAttribute("message", "Please enter a valid description (at least 10 characters)");
-            req.setAttribute("events", getAllEventsForAdmin());
-            req.getRequestDispatcher("/dashboard").forward(req, resp);
-            return;
-        }
-        if (status == null || status.trim().isEmpty()) {
-            req.setAttribute("message", "Please select a valid status");
-            req.setAttribute("events", getAllEventsForAdmin());
-            req.getRequestDispatcher("/dashboard").forward(req, resp);
-            return;
-        }
-        try {
-            Status.valueOf(status);
-        } catch (IllegalArgumentException e) {
-            req.setAttribute("message", "Invalid status value");
-            req.setAttribute("events", getAllEventsForAdmin());
-            req.getRequestDispatcher("/dashboard").forward(req, resp);
+        if (status == null || status.isEmpty()) {
+            req.setAttribute("message", "Please select event status");
+            req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
             return;
         }
 
@@ -145,125 +123,71 @@ public class EventService {
 
         try {
             transaction.begin();
-
-            // Find the event by ID
-            Event event = entityManager.find(Event.class, eventId);
+            Event event = entityManager.find(Event.class, UUID.fromString(eventName));
             if (event == null) {
-                req.setAttribute("message", "Event not found");
-                req.setAttribute("events", getAllEventsForAdmin());
-                req.getRequestDispatcher("/dashboard").forward(req, resp);
+                req.setAttribute("message", "Please enter event name");
+                req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
+                return;
+            }
+            LocalDate evenDate;
+            try {
+                evenDate = LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE);
+            } catch (DateTimeParseException e) {
+                req.setAttribute("message", "Please enter event date");
+                req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
+                return;
+            }
+            int eventCapacity;
+            try {
+                eventCapacity = Integer.parseInt(capacity);
+                if (eventCapacity <= 0) {
+                    req.setAttribute("message", "Please enter event capacity");
+                    req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                req.setAttribute("message", "Please enter event capacity");
+                req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
+                return;
+            }
+            Status eventStatus;
+            try {
+                eventStatus = Status.valueOf(status);
+            } catch (IllegalArgumentException e) {
+                req.setAttribute("message", "Please select event status");
+                req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
                 return;
             }
 
-            // Update event details
-            event.setName(name);
-            event.setDate(LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE));
-            event.setCapacity(Integer.parseInt(capacity));
+            event.setName(eventName);
+            event.setDate(evenDate);
+            event.setCapacity(eventCapacity);
+//            event.setAttachmentId(attachmentId);
+            event.setStatus(eventStatus);
             event.setDescription(description);
-            event.setStatus(Status.valueOf(status));
 
-            // Handle image upload if provided
-            if (img != null && img.getSize() > 0 && Util.isValidImage(img)) {
-                // Delete old attachment file if it exists
-                if (event.getAttachment() != null) {
-                    File oldFile = new File(event.getAttachment().getPath());
-                    if (oldFile.exists()) {
-                        oldFile.delete();
-                    }
-                    entityManager.remove(event.getAttachment());
-                }
-
-                String imgId = UUID.randomUUID().toString();
-                Attachment attachment = Attachment.builder()
-                        .id(imgId)
-                        .name(img.getSubmittedFileName())
-                        .suffix(img.getContentType().split("/")[1])
-                        .fileSize(img.getInputStream().available())
-                        .path(Util.path2.concat(imgId).concat(".").concat(img.getContentType().split("/")[1]))
-                        .build();
-
-                try (FileOutputStream outputStream = new FileOutputStream(attachment.getPath())) {
-                    outputStream.write(img.getInputStream().readAllBytes());
-                }
-                entityManager.persist(attachment);
-                event.setAttachment(attachment);
+            if (ticketId != null && !ticketId.isEmpty()) {
+                List<Ticket> tickets = entityManager.createQuery
+                                ("select t from Ticket t where t.id =:ticketId", Ticket.class)
+                        .setParameter("ticketId", ticketId)
+                        .getResultList();
+                event.setTickets(tickets);
+            } else {
+                event.setTickets(null);
             }
-
             entityManager.merge(event);
             transaction.commit();
-            req.setAttribute("message", "Event updated successfully");
-            req.setAttribute("events", getAllEventsForAdmin());
-            req.getRequestDispatcher("/dashboard").forward(req, resp);
+            resp.sendRedirect("/dashboard");
         } catch (Exception e) {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
-            req.setAttribute("message", "Error updating event: " + e.getMessage());
-            req.setAttribute("events", getAllEventsForAdmin());
-            req.getRequestDispatcher("/dashboard").forward(req, resp);
+            req.setAttribute("message", "Something went wrong");
+            req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
         } finally {
             entityManager.close();
         }
-    }
 
-    @SneakyThrows
-    public void deleteEvent(HttpServletRequest req, HttpServletResponse resp) {
-        User currentUser = Util.currentUser(req);
-        if (currentUser == null) {
-            req.setAttribute("message", "Please sign in first");
-            req.setAttribute("events", getAllEventsForAdmin());
-            req.getRequestDispatcher("/dashboard").forward(req, resp);
-            return;
-        }
-
-        String eventId = req.getParameter("id");
-
-        if (eventId == null || eventId.trim().isEmpty()) {
-            req.setAttribute("message", "Invalid event ID");
-            req.setAttribute("events", getAllEventsForAdmin());
-            req.getRequestDispatcher("/dashboard").forward(req, resp);
-            return;
-        }
-
-        EntityManager entityManager = jpaConnection.entityManager();
-        EntityTransaction transaction = entityManager.getTransaction();
-
-        try {
-            transaction.begin();
-
-            Event event = entityManager.find(Event.class, eventId);
-            if (event == null) {
-                req.setAttribute("message", "Event not found");
-                req.setAttribute("events", getAllEventsForAdmin());
-                req.getRequestDispatcher("/dashboard").forward(req, resp);
-                return;
-            }
-
-            // Delete attachment file if it exists
-            if (event.getAttachment() != null) {
-                File file = new File(event.getAttachment().getPath());
-                if (file.exists()) {
-                    file.delete();
-                }
-                entityManager.remove(event.getAttachment());
-            }
-
-            entityManager.remove(event);
-            transaction.commit();
-
-            req.setAttribute("message", "Event deleted successfully");
-            req.setAttribute("events", getAllEventsForAdmin());
-            req.getRequestDispatcher("/dashboard").forward(req, resp);
-        } catch (Exception e) {
-            if (transaction.isActive()) {
-                transaction.rollback();
-            }
-            req.setAttribute("message", "Error deleting event: " + e.getMessage());
-            req.setAttribute("events", getAllEventsForAdmin());
-            req.getRequestDispatcher("/dashboard").forward(req, resp);
-        } finally {
-            entityManager.close();
-        }
     }
 
     @SneakyThrows
@@ -271,24 +195,21 @@ public class EventService {
         User currentUser = Util.currentUser(req);
         if (currentUser == null) {
             req.setAttribute("message", "Please sign in first");
-            req.setAttribute("events", getAllEventsForAdmin());
-            req.getRequestDispatcher("/dashboard").forward(req, resp);
+            req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
             return;
         }
 
         String eventId = req.getParameter("eventId");
         String status = req.getParameter("status");
 
-        if (eventId == null || eventId.trim().isEmpty()) {
+        if (eventId == null || eventId.isEmpty()) {
             req.setAttribute("message", "Please enter event ID");
-            req.setAttribute("events", getAllEventsForAdmin());
-            req.getRequestDispatcher("/dashboard").forward(req, resp);
+            req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
             return;
         }
-        if (status == null || status.trim().isEmpty()) {
+        if (status == null || status.isEmpty()) {
             req.setAttribute("message", "Please select event status");
-            req.setAttribute("events", getAllEventsForAdmin());
-            req.getRequestDispatcher("/dashboard").forward(req, resp);
+            req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
             return;
         }
 
@@ -297,20 +218,18 @@ public class EventService {
         try {
             transaction.begin();
 
-            Event event = entityManager.find(Event.class, eventId);
+            Event event = entityManager.find(Event.class, UUID.fromString(eventId));
             if (event == null) {
-                req.setAttribute("message", "Event not found");
-                req.setAttribute("events", getAllEventsForAdmin());
-                req.getRequestDispatcher("/dashboard").forward(req, resp);
+                req.setAttribute("message", "Please enter event name");
+                req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
                 return;
             }
             Status eventStatus;
             try {
                 eventStatus = Status.valueOf(status);
             } catch (IllegalArgumentException e) {
-                req.setAttribute("message", "Please select a valid status");
-                req.setAttribute("events", getAllEventsForAdmin());
-                req.getRequestDispatcher("/dashboard").forward(req, resp);
+                req.setAttribute("message", "Please select event status");
+                req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
                 return;
             }
             event.setStatus(eventStatus);
@@ -318,16 +237,13 @@ public class EventService {
             entityManager.merge(event);
             transaction.commit();
 
-            req.setAttribute("message", "Event status updated successfully");
-            req.setAttribute("events", getAllEventsForAdmin());
-            req.getRequestDispatcher("/dashboard").forward(req, resp);
+            resp.sendRedirect("/dashboard");
         } catch (Exception e) {
             if (transaction.isActive()) {
                 transaction.rollback();
             }
-            req.setAttribute("message", "Error updating event status: " + e.getMessage());
-            req.setAttribute("events", getAllEventsForAdmin());
-            req.getRequestDispatcher("/dashboard").forward(req, resp);
+            req.setAttribute("message", "Something went wrong");
+            req.getRequestDispatcher("/dashboard/pages/addEvent.jsp").forward(req, resp);
         } finally {
             entityManager.close();
         }
@@ -344,22 +260,11 @@ public class EventService {
                         .name(event.getName())
                         .date(event.getDate())
                         .capacity(event.getCapacity())
-                        .attachmentId(event.getAttachment() != null ? event.getAttachment().getId() : null)
+                        .attachmentId(event.getAttachment().getId())
                         .status(event.getStatus())
                         .description(event.getDescription())
                         .build()
                 )
                 .collect(Collectors.toList());
-    }
-
-    // Enhanced date validation to match JSP
-    private boolean isValidDate(String date) {
-        if (!Util.isValidDate(date)) return false;
-        try {
-            LocalDate parsedDate = LocalDate.parse(date, DateTimeFormatter.ISO_LOCAL_DATE);
-            return !parsedDate.isBefore(LocalDate.of(2025, 1, 1));
-        } catch (DateTimeParseException e) {
-            return false;
-        }
     }
 }

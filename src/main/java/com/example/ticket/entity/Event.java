@@ -23,6 +23,7 @@ public class Event {
     private String name;
     private LocalDate date;
     private int capacity;
+    private Double price;
 
     @OneToOne(cascade = CascadeType.ALL)
     private Attachment attachment;

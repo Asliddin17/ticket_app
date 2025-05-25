@@ -1,76 +1,36 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Event Management</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link href="${pageContext.request.contextPath}/dashboard/assets/style.css" rel="stylesheet">
     <style>
-        .table td.description {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 300px;
-        }
-
-        .table td.name {
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 150px;
-        }
-
-        .is-invalid {
-            border-color: #dc3545 !important;
-        }
-
-        .is-valid {
-            border-color: #198754 !important;
-        }
-
-        .image-input-hidden {
-            display: none !important;
-        }
-
-        .image-preview {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
+        .table-image {
+            width: 50px;
+            height: auto;
             border-radius: 5px;
-            border: 1px solid #ddd;
         }
-
-        .image-preview-container {
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 10px;
+        .description {
+            max-width: 300px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
-
-        .remove-image {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #c21e1e;
-            color: #ffffff;
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 14px;
+        .name {
+            max-width: 150px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
     </style>
 </head>
 <body>
-
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm fixed-top">
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm fixed-top">
     <div class="container-fluid">
         <a class="navbar-brand" href="${pageContext.request.contextPath}/admin">Product Management</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -80,31 +40,26 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto align-items-center">
                 <li class="nav-item me-3">
-                    <a class="nav-link position-relative" href="${pageContext.request.contextPath}/admin">
-                        <i class="bi bi-table"></i> <span>Products</span>
+                    <a class="nav-link" href="${pageContext.request.contextPath}/admin">
+                        <i class="bi bi-table"></i> Products
                     </a>
                 </li>
                 <li class="nav-item me-3">
-                    <a class="nav-link position-relative" href="${pageContext.request.contextPath}/product">
-                        <i class="bi bi-plus-circle"></i> <span>Add product</span>
+                    <a class="nav-link" href="${pageContext.request.contextPath}/product">
+                        <i class="bi bi-plus-circle"></i> Add Product
                     </a>
                 </li>
-
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown"
-                       role="button"
-                       data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="bi bi-person-circle fs-5 me-1"></i> <span>Account</span>
+                       role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="bi bi-person-circle"></i> Account
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/profile">My Profile</a>
-                        </li>
+                        <li><a class="dropdown-item" href="${pageContext.request.contextPath}/profile">My Profile</a></li>
+                        <li><hr class="dropdown-divider"></li>
                         <li>
-                            <hr class="dropdown-divider">
-                        </li>
-                        <li>
-                            <form action="${pageContext.request.contextPath}/logout" method="post" class="px-3">
-                                <button type="submit" class="btn btn-outline-danger btn-sm w-100">Log Out</button>
+                            <form action="${pageContext.request.contextPath}/logout" method="post">
+                                <button type="submit" class="dropdown-item btn btn-outline-danger">Log Out</button>
                             </form>
                         </li>
                     </ul>
@@ -114,19 +69,17 @@
     </div>
 </nav>
 
-<div class="container my-5">
+<div class="container mt-5 pt-4">
     <h1 class="text-center mb-4">Event Management</h1>
-    <div class="search-container">
-        <div class="input-group">
+    <div class="row mb-3">
+        <div class="col-md-6 offset-md-3">
             <form action="${pageContext.request.contextPath}/search" method="POST" class="input-group">
-                <label for="searchInput" class="visually-hidden">Search events</label>
-                <input type="text" name="keyword" id="searchInput" class="form-control"
-                       placeholder="Search events...">
+                <input type="text" name="keyword" class="form-control" placeholder="Search events...">
                 <button type="submit" class="btn btn-outline-secondary">Search</button>
             </form>
         </div>
     </div>
-    <div class="table-container table-responsive">
+    <div class="table-responsive">
         <table class="table table-striped align-middle">
             <thead>
             <tr>
@@ -139,58 +92,74 @@
                 <th>Actions</th>
             </tr>
             </thead>
-            <tbody id="eventTable">
+            <tbody>
             <c:forEach items="${events}" var="event">
                 <tr>
                     <td>
                         <c:if test="${not empty event.attachmentId}">
                             <img src="${pageContext.request.contextPath}/download?fileId=${event.attachmentId}"
-                                 class="table-image" alt="Event Image" style="width: 50px; height: auto;">
+                                 class="table-image" alt="Event Image">
                         </c:if>
                         <c:if test="${empty event.attachmentId}">
                             <img src="${pageContext.request.contextPath}/dashboard/assets/img/8136031.png"
-                                 class="table-image" alt="No Image" style="width: 50px; height: auto;">
+                                 class="table-image" alt="No Image">
                         </c:if>
                     </td>
                     <td class="name">${event.name}</td>
-                    <td class="description text-truncate" data-full="${event.description}">${event.description}</td>
+                    <td class="description" data-full="${event.description}">${event.description}</td>
                     <td>${event.date}</td>
                     <td>${event.capacity}</td>
                     <td>
-                    <span class="badge
-                        ${event.status == 'ACTIVE' ? 'bg-success' :
-                          event.status == 'INACTIVE' ? 'bg-danger' :
-                          event.status == 'CANCELLED' ? 'bg-warning' : ''}">
-                            ${event.status}
-                    </span>
+                        <span class="badge ${event.status == 'ACTIVE' ? 'bg-success' : event.status == 'INACTIVE' ? 'bg-danger' : 'bg-warning'}">
+                                ${event.status}
+                        </span>
                     </td>
                     <td>
                         <div class="dropdown">
-                            <button class="btn btn-sm btn-light" type="button" data-bs-toggle="dropdown"
-                                    aria-expanded="false">⋮
-                            </button>
+                            <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">⋮</button>
                             <ul class="dropdown-menu">
                                 <li>
-                                    <a class="dropdown-item edit-button"
-                                       data-bs-toggle="modal"
-                                       data-bs-target="#editModal"
+                                    <a class="dropdown-item btn btn-outline-primary edit-button"
+                                       data-bs-toggle="modal" data-bs-target="#editModal"
                                        data-id="${event.id}"
-                                       data-name="${event.name}"
-                                       data-description="${event.description}"
+                                       data-eventName="${event.name}"
                                        data-date="${event.date}"
                                        data-capacity="${event.capacity}"
-                                       data-img="${event.attachmentId}">
+                                       data-attachmentId="${event.attachmentId}"
+                                       data-status="${event.status}"
+                                       data-description="${event.description}">
                                         <i class="bi bi-pencil-square me-2"></i>Edit
                                     </a>
                                 </li>
                                 <li>
-                                    <form action="${pageContext.request.contextPath}/delete" method="post">
-                                        <input type="hidden" name="id" value="${event.id}">
-                                        <button type="submit" class="dropdown-item">
+                                    <form action="${pageContext.request.contextPath}/changeStatus" method="post">
+                                        <input type="hidden" name="eventId" value="${event.id}">
+                                        <input type="hidden" name="status" value="INACTIVE">
+                                        <button type="submit" class="dropdown-item btn btn-outline-danger">
                                             <i class="bi bi-trash me-2"></i>Delete
                                         </button>
                                     </form>
                                 </li>
+                                <li>
+                                    <form action="${pageContext.request.contextPath}/changeStatus" method="post">
+                                        <input type="hidden" name="eventId" value="${event.id}">
+                                        <input type="hidden" name="status" value="CANCELLED">
+                                        <button type="submit" class="dropdown-item btn btn-outline-warning">
+                                            <i class="bi bi-x me-2"></i>Cancel
+                                        </button>
+                                    </form>
+                                </li>
+                                <c:if test="${event.status == 'CANCELLED'}">
+                                    <li>
+                                        <form action="${pageContext.request.contextPath}/changeStatus" method="post">
+                                            <input type="hidden" name="eventId" value="${event.id}">
+                                            <input type="hidden" name="status" value="ACTIVE">
+                                            <button type="submit" class="dropdown-item btn btn-outline-success">
+                                                <i class="bi bi-check-circle me-2"></i>Activate
+                                            </button>
+                                        </form>
+                                    </li>
+                                </c:if>
                             </ul>
                         </div>
                     </td>
@@ -200,6 +169,7 @@
         </table>
     </div>
 
+    <!-- Edit Modal -->
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -208,45 +178,44 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="editForm" enctype="multipart/form-data" action="${pageContext.request.contextPath}/edit"
-                          method="post" novalidate>
-                        <input type="hidden" name="id">
+                    <form id="editForm" action="${pageContext.request.contextPath}/my-tickets" method="post" enctype="multipart/form-data">
+                        <input type="hidden" name="id" id="eventId">
+                        <input type="hidden" name="existingAttachmentId" id="existingAttachmentId">
                         <div class="mb-3">
-                            <label for="editImage" class="form-label">Event Image</label>
-                            <input type="file" name="img" class="form-control" id="editImage" accept="image/*">
-                            <div class="image-preview-container d-none" id="editImagePreviewContainer">
-                                <img id="editImagePreview" class="image-preview" alt="Image Preview">
-                                <button type="button" class="remove-image" id="removeEditImage">
-                                    <i class="bi bi-x" style="margin-top: 1px"></i>
-                                </button>
-                            </div>
-                            <div class="invalid-feedback">Please upload an event image.</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editName" class="form-label">Event Name</label>
-                            <input type="text" class="form-control" id="editName" name="name" required minlength="3">
+                            <label for="eventName" class="form-label">Event Name</label>
+                            <input type="text" class="form-control" id="eventName" name="eventName" required minlength="3">
                             <div class="invalid-feedback">Name must be at least 3 characters.</div>
                         </div>
                         <div class="mb-3">
-                            <label for="editDescription" class="form-label">Description</label>
-                            <textarea class="form-control" name="description" id="editDescription" required
-                                      minlength="10"></textarea>
-                            <div class="invalid-feedback">Description must be at least 10 characters.</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editDate" class="form-label">Event Date</label>
-                            <input type="date" class="form-control" id="editDate" name="date" required min="2025-01-01">
+                            <label for="date" class="form-label">Event Date</label>
+                            <input type="date" class="form-control" id="date" name="date" required min="2025-01-01">
                             <div class="invalid-feedback">Date must be on or after January 1, 2025.</div>
                         </div>
                         <div class="mb-3">
-                            <label for="editCapacity" class="form-label">Capacity</label>
-                            <input type="number" class="form-control" id="editCapacity" name="capacity" required min="1"
-                                   step="1">
+                            <label for="capacity" class="form-label">Capacity</label>
+                            <input type="number" class="form-control" id="capacity" name="capacity" required min="1" step="1">
                             <div class="invalid-feedback">Capacity must be a positive number (at least 1).</div>
                         </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Edit</button>
+                        <div class="mb-3">
+                            <label for="attachmentId" class="form-label">Event Image</label>
+                            <input type="file" class="form-control" id="attachmentId" name="attachmentId" accept="image/*">
+                            <div class="invalid-feedback">Please upload an event image (optional).</div>
                         </div>
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-select" id="status" name="status" required>
+                                <option value="ACTIVE">ACTIVE</option>
+                                <option value="INACTIVE">INACTIVE</option>
+                                <option value="CANCELLED">CANCELLED</option>
+                            </select>
+                            <div class="invalid-feedback">Please select a status.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" required minlength="10"></textarea>
+                            <div class="invalid-feedback">Description must be at least 10 characters.</div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
                     </form>
                 </div>
             </div>
@@ -254,145 +223,101 @@
     </div>
 </div>
 
-<script src="${pageContext.request.contextPath}/dashboard/assets/script.js"></script>
+<script>
+    // Edit button functionality with enhanced error handling
+    document.querySelectorAll('.edit-button').forEach(button => {
+        button.addEventListener('click', () => {
+            const id = button.getAttribute('data-id') || '';
+            const eventName = button.getAttribute('data-eventName') || '';
+            const date = button.getAttribute('data-date') || '';
+            const capacity = button.getAttribute('data-capacity') || '';
+            const attachmentId = button.getAttribute('data-attachmentId') || '';
+            const status = button.getAttribute('data-status') || 'ACTIVE';
+            const description = button.getAttribute('data-description') || '';
+
+            console.log('Edit button clicked with data:', { id, eventName, date, capacity, attachmentId, status, description });
+
+            // DOM elementlarni tekshirish
+            const form = document.getElementById('editForm');
+            if (!form) {
+                console.error('Edit form not found!');
+                return;
+            }
+
+            const eventIdInput = document.getElementById('eventId');
+            const eventNameInput = document.getElementById('eventName');
+            const dateInput = document.getElementById('date');
+            const capacityInput = document.getElementById('capacity');
+            const existingAttachmentIdInput = document.getElementById('existingAttachmentId');
+            const statusSelect = document.getElementById('status');
+            const descriptionTextarea = document.getElementById('description');
+
+            if (!eventIdInput || !eventNameInput || !dateInput || !capacityInput || !existingAttachmentIdInput || !statusSelect || !descriptionTextarea) {
+                console.error('One or more input elements not found!');
+                return;
+            }
+
+            // Qiymatlarni o'rnatish
+            eventIdInput.value = id;
+            eventNameInput.value = eventName;
+            dateInput.value = date;
+            capacityInput.value = capacity;
+            existingAttachmentIdInput.value = attachmentId;
+            statusSelect.value = status;
+            descriptionTextarea.value = description;
+
+            console.log('Form values set:', {
+                id: eventIdInput.value,
+                eventName: eventNameInput.value,
+                date: dateInput.value,
+                capacity: capacityInput.value,
+                existingAttachmentId: existingAttachmentIdInput.value,
+                status: statusSelect.value,
+                description: descriptionTextarea.value
+            });
+        });
+    });
+
+    // Form submission with debug
+    const editForm = document.getElementById('editForm');
+    if (editForm) {
+        editForm.addEventListener('submit', function (event) {
+            if (!editForm.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+                console.log('Form validation failed. Invalid fields:', editForm.querySelectorAll(':invalid'));
+            } else {
+                console.log('Form submitted with values:', {
+                    id: editForm.querySelector('input[name="id"]').value,
+                    eventName: editForm.querySelector('input[name="eventName"]').value,
+                    date: editForm.querySelector('input[name="date"]').value,
+                    capacity: editForm.querySelector('input[name="capacity"]').value,
+                    existingAttachmentId: editForm.querySelector('input[name="existingAttachmentId"]').value,
+                    status: editForm.querySelector('select[name="status"]').value,
+                    description: editForm.querySelector('textarea[name="description"]').value
+                });
+            }
+            editForm.classList.add('was-validated');
+        });
+    } else {
+        console.error('Edit form not found on page load!');
+    }
+
+    // Description truncation
+    document.querySelectorAll('.description').forEach(cell => {
+        const fullText = cell.getAttribute('data-full');
+        if (fullText && fullText.length > 65) {
+            cell.innerHTML = fullText.substring(0, 75) + '<br>' + fullText.substring(75, 150) + '...';
+        } else {
+            cell.textContent = fullText || '';
+        }
+    });
+</script>
 
 <c:if test="${not empty message}">
     <script>
         alert("${message}");
     </script>
 </c:if>
-
-<script>
-    // Edit button functionality
-    document.querySelectorAll('.edit-button').forEach(button => {
-        button.addEventListener('click', () => {
-            const id = button.getAttribute('data-id');
-            const name = button.getAttribute('data-name');
-            const description = button.getAttribute('data-description');
-            const date = button.getAttribute('data-date');
-            const capacity = button.getAttribute('data-capacity');
-            const imgId = button.getAttribute('data-img');
-
-            document.querySelector('#editForm input[name="id"]').value = id;
-            document.querySelector('#editForm input[name="name"]').value = name;
-            document.querySelector('#editForm textarea[name="description"]').value = description;
-            document.querySelector('#editForm input[name="date"]').value = date;
-            document.querySelector('#editForm input[name="capacity"]').value = capacity;
-
-            const preview = document.getElementById('editImagePreview');
-            const container = document.getElementById('editImagePreviewContainer');
-            const inputFile = document.getElementById('editImage');
-
-            if (imgId) {
-                preview.src = `${pageContext.request.contextPath}/download?fileId=${imgId}`;
-                container.classList.remove('d-none');
-                inputFile.classList.add('image-input-hidden');
-            } else {
-                container.classList.add('d-none');
-                inputFile.classList.remove('image-input-hidden');
-            }
-        });
-    });
-
-    // Input validation for edit form
-    document.querySelectorAll('#editForm input, #editForm textarea').forEach(input => {
-        input.addEventListener('input', () => {
-            if (input.id === 'editCapacity') {
-                input.value = input.value.replace(/[^0-9]/g, '');
-                if (input.value === '0' || parseInt(input.value) < 1) {
-                    input.value = '';
-                    input.classList.add('is-invalid');
-                    input.classList.remove('is-valid');
-                }
-            }
-            if (input.id === 'editDate') {
-                // Ensure date is on or after 2025
-                const selectedDate = new Date(input.value);
-                const minDate = new Date('2025-01-01');
-                const year = input.value.split('-')[0];
-                if (year.length !== 4 || selectedDate < minDate) {
-                    input.classList.add('is-invalid');
-                    input.classList.remove('is-valid');
-                    input.setCustomValidity('Date must be on or after January 1, 2025.');
-                } else {
-                    input.setCustomValidity('');
-                }
-            }
-            if (input.checkValidity()) {
-                input.classList.remove('is-invalid');
-                input.classList.add('is-valid');
-            } else {
-                input.classList.remove('is-valid');
-                input.classList.add('is-invalid');
-            }
-        });
-    });
-
-    // Image upload and preview for edit form
-    document.getElementById('editImage').addEventListener('change', function () {
-        const file = this.files[0];
-        const preview = document.getElementById('editImagePreview');
-        const previewContainer = document.getElementById('editImagePreviewContainer');
-        if (file) {
-            preview.src = URL.createObjectURL(file);
-            previewContainer.classList.remove('d-none');
-            this.classList.add('image-input-hidden');
-            this.classList.remove('is-invalid');
-            this.classList.add('is-valid');
-        } else {
-            previewContainer.classList.add('d-none');
-            this.classList.remove('image-input-hidden');
-            this.classList.add('is-invalid');
-        }
-    });
-
-    document.getElementById('removeEditImage').addEventListener('click', function () {
-        const input = document.getElementById('editImage');
-        const previewContainer = document.getElementById('editImagePreviewContainer');
-        input.value = '';
-        previewContainer.classList.add('d-none');
-        input.classList.remove('image-input-hidden');
-        input.classList.add('is-invalid');
-        input.classList.remove('is-valid');
-    });
-
-    // Form submission validation
-    const editForm = document.getElementById('editForm');
-    editForm.addEventListener('submit', function (event) {
-        if (!editForm.checkValidity()) {
-            event.preventDefault();
-            event.stopPropagation();
-            editForm.querySelectorAll('input, textarea').forEach(input => {
-                if (!input.checkValidity()) {
-                    input.classList.add('is-invalid');
-                    input.classList.remove('is-valid');
-                }
-            });
-        }
-        // Custom date validation
-        const eventDate = document.getElementById('editDate');
-        const selectedDate = new Date(eventDate.value);
-        const minDate = new Date('2025-01-01');
-        const year = eventDate.value.split('-')[0];
-        if (eventDate.value && (year.length !== 4 || selectedDate < minDate)) {
-            eventDate.setCustomValidity('Date must be on or after January 1, 2025.');
-            eventDate.classList.add('is-invalid');
-            eventDate.classList.remove('is-valid');
-        } else {
-            eventDate.setCustomValidity('');
-        }
-        editForm.classList.add('was-validated');
-    }, false);
-
-    // Description truncation
-    document.querySelectorAll('.description').forEach(cell => {
-        const fullText = cell.getAttribute('data-full');
-        if (fullText.length > 65) {
-            cell.innerHTML = fullText.substring(0, 75) + '<br>' + fullText.substring(75, 150) + '...';
-        } else {
-            cell.textContent = fullText;
-        }
-    });
-</script>
 </body>
 </html>

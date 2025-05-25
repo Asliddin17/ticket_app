@@ -13,6 +13,7 @@
             padding-top: 70px;
             font-family: 'Arial', sans-serif;
         }
+
         .event-card {
             border: none;
             border-radius: 10px;
@@ -20,9 +21,11 @@
             transition: transform 0.2s;
             height: 100%;
         }
+
         .event-card:hover {
             transform: translateY(-3px);
         }
+
         .search-image-btn {
             background-color: #007bff;
             color: #fff;
@@ -30,9 +33,11 @@
             border-radius: 5px;
             transition: background-color 0.2s;
         }
+
         .search-image-btn:hover {
             background-color: #0056b3;
         }
+
         .event-image {
             width: 100%;
             height: 0;
@@ -41,6 +46,7 @@
             border-radius: 10px 10px 0 0;
             background-color: #ffffff;
         }
+
         .event-image img {
             position: absolute;
             top: 0;
@@ -50,13 +56,16 @@
             object-fit: contain;
             object-position: center;
         }
+
         .search-container {
             max-width: 600px;
             margin: 0 auto 20px;
         }
+
         .card-body {
             padding: 15px;
         }
+
         .btn-logout {
             background-color: #007bff;
             color: #fff;
@@ -64,9 +73,11 @@
             border-radius: 5px;
             padding: 8px 15px;
         }
+
         .btn-logout:hover {
             background-color: #0056b3;
         }
+
         .image-preview-container {
             position: relative;
             display: flex;
@@ -74,6 +85,7 @@
             align-items: center;
             margin-top: 10px;
         }
+
         .image-preview {
             width: 150px;
             height: 150px;
@@ -81,9 +93,11 @@
             border-radius: 5px;
             border: 1px solid #ddd;
         }
+
         .image-input-hidden {
             display: none;
         }
+
         .remove-image {
             position: absolute;
             top: -5px;
@@ -100,6 +114,7 @@
             cursor: pointer;
             font-size: 14px;
         }
+
         .footer {
             background-color: #f8f9fa;
             padding: 20px 0;
@@ -107,12 +122,15 @@
             font-size: 0.9rem;
             color: #6c757d;
         }
+
         .badge {
             font-size: 0.9em;
         }
+
         .is-invalid {
             border-color: #dc3545 !important;
         }
+
         .is-valid {
             border-color: #198754 !important;
         }
@@ -156,11 +174,15 @@
                         <li>
                             <a class="dropdown-item" href="${pageContext.request.contextPath}/card">Add Card</a>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li>
                             <a class="dropdown-item" href="${pageContext.request.contextPath}/card-list">Show Card</a>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li>
                             <a class="dropdown-item" href="${pageContext.request.contextPath}/fill">Fill balance</a>
                         </li>
@@ -176,7 +198,9 @@
                         <li>
                             <a class="dropdown-item" href="${pageContext.request.contextPath}/profile">My Profile</a>
                         </li>
-                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <hr class="dropdown-divider">
+                        </li>
                         <li>
                             <form action="${pageContext.request.contextPath}/logout" method="post" class="px-3">
                                 <button type="submit" class="btn btn-logout btn-sm w-100">Log Out</button>
@@ -211,7 +235,7 @@
                                  alt="Event Image">
                         </c:if>
                         <c:if test="${empty event.attachmentId}">
-                            <img src="${pageContext.request.contextPath}/assets/placeholder.png"
+                            <img src="./assets/img/8136031.png"
                                  alt="No Image">
                         </c:if>
                     </div>
@@ -220,6 +244,7 @@
                         <p class="card-text flex-grow-1">${event.description}</p>
                         <p class="card-text"><strong>Date:</strong> ${event.date}</p>
                         <p class="card-text"><strong>Capacity:</strong> ${event.capacity}</p>
+                        <p class="card-text"><strong>Price:</strong> ${event.price}</p>
                         <p class="card-text">
                             <strong>Status:</strong>
                             <span class="badge
@@ -230,12 +255,13 @@
                             </span>
                         </p>
                         <div class="d-flex align-items-center justify-content-end">
-                            <form action="${pageContext.request.contextPath}/basket" method="post">
-                                <input type="hidden" value="${event.id}" name="eventId">
-                                <button type="submit" class="btn btn-primary btn-sm">
-                                    <i class="bi bi-ticket me-1"></i> <span>Buy ticket</span>
-                                </button>
-                            </form>
+                            <c:if test="${event.status == 'ACTIVE'}">
+                                <a href="${pageContext.request.contextPath}/place?eventId=${event.id}">
+                                    <button type="submit" class="btn btn-primary btn-sm">
+                                        <i class="bi bi-ticket me-1"></i> <span>Buy ticket</span>
+                                    </button>
+                                </a>
+                            </c:if>
                         </div>
                     </div>
                 </div>

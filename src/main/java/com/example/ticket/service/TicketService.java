@@ -1,11 +1,12 @@
 package com.example.ticket.service;
 
 import com.example.ticket.db.JpaConnection;
-import com.example.ticket.entity.Basket;
+import com.example.ticket.entity.Card;
 import com.example.ticket.entity.Event;
 import com.example.ticket.entity.Ticket;
 import com.example.ticket.entity.User;
 import com.example.ticket.entity.enums.Status;
+import com.example.ticket.payload.TicketDTO;
 import com.example.ticket.utils.Util;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
@@ -13,7 +14,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.SneakyThrows;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 
 public class TicketService {
@@ -55,20 +58,20 @@ public class TicketService {
                 req.getRequestDispatcher("/dashboard/pages/my_ticket.jsp").forward(req, resp);
                 return;
             }
-            Basket basket = null;
-            if (basketId != null) {
-                basket = entityManager.find(Basket.class, basketId);
-                if (basket == null) {
-                    req.setAttribute("message", "Basket not found");
-                    req.getRequestDispatcher("/dashboard/pages/my_ticket.jsp").forward(req, resp);
-                    return;
-                }
-            }
+//            Basket basket = null;
+//            if (basketId != null) {
+//                basket = entityManager.find(Basket.class, basketId);
+//                if (basket == null) {
+//                    req.setAttribute("message", "Basket not found");
+//                    req.getRequestDispatcher("/dashboard/pages/my_ticket.jsp").forward(req, resp);
+//                    return;
+//                }
+//            }
             Ticket ticket = new Ticket();
             ticket.setId(UUID.randomUUID().toString());
             ticket.setEvent(event);
             ticket.setUser(currentUser);
-            ticket.setBasket(basket);
+//            ticket.setBasket(basket);
             ticket.setStatus(Status.ACTIVE);
 
             entityManager.persist(ticket);
@@ -87,7 +90,8 @@ public class TicketService {
 
     @SneakyThrows
     public void cancelTicket(HttpServletRequest req, HttpServletResponse resp) {
-        User currentUser = Util.currentUser(req);
+//        User currentUser = Util.currentUser(req);
+        Object userId = req.getSession().getAttribute("user_id");
         String ticketId = req.getParameter("ticketId");
         if (ticketId == null || ticketId.isEmpty()) {
             req.setAttribute("message", "Please select an event");
@@ -104,20 +108,20 @@ public class TicketService {
                 req.getRequestDispatcher("/dashboard/pages/my_ticket.jsp").forward(req, resp);
                 return;
             }
-            if (!ticket.getUser().getId().equals(currentUser.getId())) {
+            if (!ticket.getUser().getId().equals(userId)) {
                 req.setAttribute("message", "You are not allowed to cancel this ticket");
                 req.getRequestDispatcher("/dashboard/pages/my_ticket.jsp").forward(req, resp);
                 return;
             }
-            if (ticket.getStatus() == Status.ACTIVE) {
-                req.setAttribute("message", "Ticket cancelled");
-                req.getRequestDispatcher("/dashboard/pages/my_ticket.jsp").forward(req, resp);
-                return;
-            }
-            ticket.setStatus(Status.INACTIVE);
+
+            ticket.setStatus(Status.CANCELLED);
+            Card card = entityManager.createQuery("select c from Card c where c.owner.id=:ownerId", Card.class).setParameter("ownerId", userId).getSingleResultOrNull();
+            card.setBalance(card.getBalance() + ticket.getEvent().getPrice());
+
+            entityManager.persist(card);
             entityManager.merge(ticket);
             transaction.commit();
-            resp.sendRedirect(req.getContextPath() + "/my_ticket");
+            resp.sendRedirect("/my-tickets");
         } catch (Exception e) {
             if (transaction.isActive()) {
                 transaction.rollback();
@@ -127,5 +131,20 @@ public class TicketService {
         } finally {
             entityManager.close();
         }
+    }
+
+    public List<TicketDTO> getActiveTickets(String userId) {
+        EntityManager entityManager = jpaConnection.entityManager();
+        List<Ticket> resultList = entityManager.createQuery("select t from Ticket t where t.user.id = :userId and t.status = 'ACTIVE'", Ticket.class).setParameter("userId", userId).getResultList();
+
+        entityManager.close();
+        return resultList.stream().map(t -> TicketDTO.builder()
+                .id(t.getId())
+                .placeNumber(t.getPlaceNumber())
+                .eventName(t.getEvent().getName())
+                .status(t.getStatus())
+                .attachmentId(t.getEvent().getAttachment().getId())
+                .build()
+        ).collect(Collectors.toList());
     }
 }

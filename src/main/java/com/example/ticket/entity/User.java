@@ -31,10 +31,7 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<History> histories;
-
-    @OneToMany(mappedBy = "user")
-    private List<Basket> baskets;
-
+    
     @OneToMany(mappedBy = "owner")
     private List<Card> cards;
 }
